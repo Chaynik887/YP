@@ -1,0 +1,44 @@
+CREATE TABLE Roles (
+    roleID SERIAL PRIMARY KEY,
+    roleName VARCHAR(50) NOT NULL
+);
+
+CREATE TABLE Statuses (
+    statusID SERIAL PRIMARY KEY,
+    statusName VARCHAR(50) NOT NULL
+);
+
+CREATE TABLE Users (
+    userID SERIAL PRIMARY KEY,
+    fio VARCHAR(150) NOT NULL,
+    phone VARCHAR(20),
+    login VARCHAR(50) UNIQUE NOT NULL,
+    password VARCHAR(50) NOT NULL,
+    roleID INTEGER NOT NULL,
+    FOREIGN KEY (roleID) REFERENCES Roles(roleID)
+);
+
+CREATE TABLE Requests (
+    requestID SERIAL PRIMARY KEY,
+    startDate DATE NOT NULL,
+    climateTechType VARCHAR(100) NOT NULL,
+    climateTechModel VARCHAR(100) NOT NULL,
+    problemDescription TEXT NOT NULL,
+    statusID INTEGER NOT NULL,
+    completionDate DATE,
+    repairParts TEXT,
+    masterID INTEGER,
+    clientID INTEGER NOT NULL,
+    FOREIGN KEY (statusID) REFERENCES Statuses(statusID),
+    FOREIGN KEY (masterID) REFERENCES Users(userID),
+    FOREIGN KEY (clientID) REFERENCES Users(userID)
+);
+
+CREATE TABLE Comments (
+    commentID SERIAL PRIMARY KEY,
+    message TEXT NOT NULL,
+    masterID INTEGER NOT NULL,
+    requestID INTEGER NOT NULL,
+    FOREIGN KEY (masterID) REFERENCES Users(userID),
+    FOREIGN KEY (requestID) REFERENCES Requests(requestID)
+);
