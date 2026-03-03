@@ -1,0 +1,39 @@
+﻿@model IEnumerable<YP.Models.Request>
+
+@{
+    ViewData["Title"] = "Список заявок";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Заявки на ремонт</h1>
+</div>
+
+<table class="table table-striped mt-4">
+    <thead class="table-dark">
+        <tr>
+            <th>ID</th>
+            <th>Оборудование</th>
+            <th>Проблема</th>
+            <th>Клиент</th>
+            <th>Статус</th>
+            <th>Дата начала</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.RequestID</td>
+                <td>@item.ClimateTechType (@item.ClimateTechModel)</td>
+                <td>@item.ProblemDescription</td>
+                <td>@item.Client?.Fio</td>
+                <td>
+                    <span class="badge bg-primary">
+                        @item.Status?.StatusName
+                    </span>
+                </td>
+                <td>@item.StartDate.ToShortDateString()</td>
+            </tr>
+        }
+    </tbody>
+</table>
