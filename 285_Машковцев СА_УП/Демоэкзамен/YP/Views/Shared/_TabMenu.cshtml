@@ -1,0 +1,41 @@
+﻿<div class="d-flex justify-content-between align-items-end mb-4 border-bottom">
+
+    <ul class="nav nav-tabs border-0">
+        <li class="nav-item">
+            <a class="nav-link @ActiveTab("Index")" asp-controller="Home" asp-action="Index">Заявки</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link @ActiveTab("Comments")" asp-controller="Home" asp-action="Comments">Комментарии</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link @ActiveTab("Users")" asp-controller="Home" asp-action="Users">Пользователи</a>
+        </li>
+        <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button">Прочее</a>
+            <ul class="dropdown-menu">
+                <li><a class="dropdown-item" asp-controller="Home" asp-action="Statuses">Статусы</a></li>
+                <li><a class="dropdown-item" asp-controller="Home" asp-action="Roles">Роли</a></li>
+            </ul>
+        </li>
+    </ul>
+
+
+    <div class="pb-2 d-flex align-items-center">
+        <div class="me-3 text-end">
+            <div class="fw-bold" style="font-size: 0.9rem;">@User.Identity?.Name</div>
+            <span class="badge bg-info text-dark" style="font-size: 0.7rem;">
+                @User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value
+            </span>
+        </div>
+        <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
+            <button type="submit" class="btn btn-outline-danger btn-sm" title="Выйти">
+                Выход
+            </button>
+        </form>
+    </div>
+</div>
+
+@functions {
+    string ActiveTab(string action) =>
+        ViewContext.RouteData.Values["action"]?.ToString() == action ? "active" : "";
+}

@@ -1,0 +1,22 @@
+﻿@model IEnumerable<YP.Models.Role>
+@{
+    ViewData["Title"] = "Роли";
+}
+
+<partial name="_TabMenu" />
+
+<h3>Роли</h3>
+<table class="table table-sm w-50">
+    <thead>
+        <tr><th>ID</th><th>Название роли</th></tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.RoleID</td>
+                <td>@item.RoleName</td>
+            </tr>
+        }
+    </tbody>
+</table>

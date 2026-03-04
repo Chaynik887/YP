@@ -1,0 +1,22 @@
+﻿@model IEnumerable<YP.Models.Status>
+@{
+    ViewData["Title"] = "Статусы";
+}
+
+<partial name="_TabMenu" />
+
+<h3>Статусы</h3>
+<table class="table table-sm w-50">
+    <thead>
+        <tr><th>ID</th><th>Название статуса</th></tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.StatusID</td>
+                <td>@item.StatusName</td>
+            </tr>
+        }
+    </tbody>
+</table>

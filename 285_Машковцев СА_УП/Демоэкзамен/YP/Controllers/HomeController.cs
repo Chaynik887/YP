@@ -17,13 +17,48 @@ namespace YP.Controllers
             _context = context;
         }
 
-        public IActionResult Index()
+        // заявки
+        public async Task<IActionResult> Index()
         {
-            var requests = _context.Requests
+            var requests = await _context.Requests
                 .Include(r => r.Status)
                 .Include(r => r.Client)
-                .ToList();
+                .Include(r => r.Master)
+                .ToListAsync();
             return View(requests);
+        }
+
+        // комментарии
+        public async Task<IActionResult> Comments()
+        {
+            var comments = await _context.Comments
+                .Include(c => c.Master)
+                .Include(c => c.Request)
+                .ToListAsync();
+            return View(comments);
+        }
+
+        // пользователи
+        public async Task<IActionResult> Users()
+        {
+            var users = await _context.Users
+                .Include(u => u.Role)
+                .ToListAsync();
+            return View(users);
+        }
+
+        // статусы
+        public async Task<IActionResult> Statuses()
+        {
+            var statuses = await _context.Statuses.ToListAsync();
+            return View(statuses);
+        }
+
+        // роли
+        public async Task<IActionResult> Roles()
+        {
+            var roles = await _context.Roles.ToListAsync();
+            return View(roles);
         }
 
         public IActionResult Privacy() => View();

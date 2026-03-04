@@ -1,15 +1,16 @@
 ﻿@model IEnumerable<YP.Models.Request>
-
 @{
     ViewData["Title"] = "Список заявок";
 }
+
+<partial name="_TabMenu" />
 
 <div class="text-center">
     <h1 class="display-4">Заявки на ремонт</h1>
 </div>
 
-<table class="table table-striped mt-4">
-    <thead class="table-dark">
+
+<table class="table table-bordered">
         <tr>
             <th>ID</th>
             <th>Оборудование</th>

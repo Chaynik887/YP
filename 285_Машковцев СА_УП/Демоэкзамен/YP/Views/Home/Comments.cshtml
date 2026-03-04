@@ -1,0 +1,29 @@
+﻿@model IEnumerable<YP.Models.Comment>
+@{
+    ViewData["Title"] = "Комментарии";
+}
+
+<partial name="_TabMenu" />
+
+<h3>История комментариев</h3>
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Сообщение</th>
+            <th>Мастер</th>
+            <th>Заявка №</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.CommentID</td>
+                <td>@item.Message</td>
+                <td>@item.Master?.Fio</td>
+                <td>@item.RequestID</td>
+            </tr>
+        }
+    </tbody>
+</table>
