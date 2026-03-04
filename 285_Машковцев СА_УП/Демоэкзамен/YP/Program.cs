@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 using YP.Data;
 using YP.Models;
+using Microsoft.Extensions.DependencyInjection;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -19,10 +20,47 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
     .AddCookie(options =>
     {
         options.LoginPath = "/Account/Login";
-        options.AccessDeniedPath = "/Account/AccessDenied";
+        options.AccessDeniedPath = "/Requests/Index";
     });
 
 var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    db.Database.EnsureCreated();
+
+    if (!db.Roles.Any())
+    {
+        db.Roles.AddRange(
+            new Role { RoleName = "Менеджер" },
+            new Role { RoleName = "Специалист" },
+            new Role { RoleName = "Оператор" },
+            new Role { RoleName = "Заказчик" }
+        );
+        db.SaveChanges();
+    }
+
+    if (!db.Statuses.Any())
+    {
+        db.Statuses.AddRange(
+            new Status { StatusName = "В процессе ремонта" },
+            new Status { StatusName = "Готова к выдаче" },
+            new Status { StatusName = "Новая заявка" }
+        );
+        db.SaveChanges();
+    }
+
+    try
+    {
+        db.Database.ExecuteSqlRaw(
+            "SELECT setval(pg_get_serial_sequence('requests','requestid'), COALESCE(MAX(requestid),0) + 1, false) FROM requests;");
+    }
+    catch
+    {
+        // если последовательность не найдена, просто пропускаем
+    }
+}
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
@@ -43,7 +81,7 @@ app.MapStaticAssets();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}")
+    pattern: "{controller=Requests}/{action=Index}/{id?}")
     .WithStaticAssets();
 
 

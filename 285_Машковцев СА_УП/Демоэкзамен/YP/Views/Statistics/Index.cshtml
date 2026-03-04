@@ -1,0 +1,48 @@
+@{
+    ViewData["Title"] = "Статистика";
+    var byTech = ViewBag.ByTechType as IEnumerable<dynamic> ?? Array.Empty<dynamic>();
+    var byStatus = ViewBag.ByStatus as IEnumerable<dynamic> ?? Array.Empty<dynamic>();
+    var byProblem = ViewBag.ByProblem as IEnumerable<dynamic> ?? Array.Empty<dynamic>();
+}
+
+<partial name="_TabMenu" />
+
+<h3>Статистика</h3>
+
+<div class="mb-3">
+    <div><b>Выполнено заявок:</b> @ViewBag.CompletedCount</div>
+</div>
+
+<h5>По статусам</h5>
+<table class="table table-bordered table-sm">
+    <thead><tr><th>Статус</th><th style="width:120px;">Кол-во</th></tr></thead>
+    <tbody>
+    @foreach (var x in byStatus)
+    {
+        <tr><td>@x.Name</td><td>@x.Count</td></tr>
+    }
+    </tbody>
+</table>
+
+<h5>По типам оборудования</h5>
+<table class="table table-bordered table-sm">
+    <thead><tr><th>Тип</th><th style="width:120px;">Кол-во</th></tr></thead>
+    <tbody>
+    @foreach (var x in byTech)
+    {
+        <tr><td>@x.Name</td><td>@x.Count</td></tr>
+    }
+    </tbody>
+</table>
+
+<h5>Топ-10 проблем (как в тексте заявки)</h5>
+<table class="table table-bordered table-sm">
+    <thead><tr><th>Проблема</th><th style="width:120px;">Кол-во</th></tr></thead>
+    <tbody>
+    @foreach (var x in byProblem)
+    {
+        <tr><td>@x.Name</td><td>@x.Count</td></tr>
+    }
+    </tbody>
+</table>
+

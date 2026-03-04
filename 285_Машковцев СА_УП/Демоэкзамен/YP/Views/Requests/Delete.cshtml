@@ -1,0 +1,26 @@
+@model YP.Models.Request
+@{
+    ViewData["Title"] = "Удалить заявку";
+}
+
+<partial name="_TabMenu" />
+
+<h3>Удалить заявку №@Model.RequestID</h3>
+
+<div class="alert alert-warning">
+    Вы уверены, что хотите удалить заявку? Операция необратима.
+</div>
+
+<table class="table table-bordered table-sm">
+    <tr><th style="width: 220px;">Оборудование</th><td>@Model.ClimateTechType (@Model.ClimateTechModel)</td></tr>
+    <tr><th>Проблема</th><td>@Model.ProblemDescription</td></tr>
+    <tr><th>Клиент</th><td>@Model.Client?.Fio</td></tr>
+    <tr><th>Статус</th><td>@Model.Status?.StatusName</td></tr>
+</table>
+
+<form asp-action="Delete" method="post">
+    <input type="hidden" name="id" value="@Model.RequestID" />
+    <button type="submit" class="btn btn-danger">Удалить</button>
+    <a asp-action="Details" asp-route-id="@Model.RequestID" class="btn btn-outline-secondary">Отмена</a>
+</form>
+

@@ -1,0 +1,87 @@
+@model IEnumerable<YP.Models.Request>
+@{
+    ViewData["Title"] = "Заявки";
+    var statuses = ViewBag.Statuses as List<string> ?? new List<string>();
+}
+
+<partial name="_TabMenu" />
+
+@if (TempData["Info"] != null)
+{
+    <div class="alert alert-info">@TempData["Info"]</div>
+}
+
+<h3>Заявки</h3>
+
+<form method="get" class="row g-2 mb-3">
+    <div class="col-md-2">
+        <input type="number" name="requestId" value="@ViewBag.RequestId" class="form-control" placeholder="№ заявки" />
+    </div>
+    <div class="col-md-3">
+        <select name="status" class="form-select">
+            <option value="">Любой статус</option>
+            @foreach (var s in statuses)
+            {
+                <option value="@s" selected="@(ViewBag.Status as string == s)">@s</option>
+            }
+        </select>
+    </div>
+    <div class="col-md-4">
+        <input name="text" value="@ViewBag.Text" class="form-control" placeholder="Текст (оборудование/модель/проблема/клиент)" />
+    </div>
+    <div class="col-md-3 d-flex gap-2">
+        <button type="submit" class="btn btn-primary">Поиск</button>
+        <a asp-action="Index" class="btn btn-outline-secondary">Сброс</a>
+        @if (User.IsInRole("Заказчик") || User.IsInRole("Оператор") || User.IsInRole("Менеджер"))
+        {
+            <a asp-action="Create" class="btn btn-success">+ Добавить</a>
+        }
+    </div>
+</form>
+
+<table class="table table-bordered table-sm">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Оборудование</th>
+            <th>Проблема</th>
+            <th>Клиент</th>
+            <th>Мастер</th>
+            <th>Статус</th>
+            <th>Дата</th>
+            <th style="width: 160px;">Действия</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (!Model.Any())
+        {
+            <tr><td colspan="8" class="text-center">Ничего не найдено</td></tr>
+        }
+        else
+        {
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.RequestID</td>
+                    <td>@item.ClimateTechType (@item.ClimateTechModel)</td>
+                    <td>@item.ProblemDescription</td>
+                    <td>@item.Client?.Fio</td>
+                    <td>@item.Master?.Fio</td>
+                    <td>@item.Status?.StatusName</td>
+                    <td>@item.StartDate.ToShortDateString()</td>
+                    <td>
+                        <a asp-action="Details" asp-route-id="@item.RequestID">Открыть</a>
+                        |
+                        <a asp-action="Edit" asp-route-id="@item.RequestID">Изменить</a>
+                        @if (User.IsInRole("Оператор") || User.IsInRole("Менеджер"))
+                        {
+                            <text> | </text>
+                            <a asp-action="Delete" asp-route-id="@item.RequestID">Удалить</a>
+                        }
+                    </td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>
+

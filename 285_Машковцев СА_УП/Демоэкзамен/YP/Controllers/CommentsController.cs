@@ -1,15 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using YP.Data;
 using YP.Models;
 
 namespace YP.Controllers
 {
+    [Authorize]
     public class CommentsController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -19,53 +17,75 @@ namespace YP.Controllers
             _context = context;
         }
 
-        // GET: Comments
+        // просмотр комментариев
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Comments.ToListAsync());
-        }
+            var query = _context.Comments
+                .Include(c => c.Master)
+                .Include(c => c.Request)
+                .AsQueryable();
 
-        // GET: Comments/Details/5
-        public async Task<IActionResult> Details(int? id)
-        {
-            if (id == null)
+            if (User.IsInRole("Специалист"))
             {
-                return NotFound();
+                var userId = int.TryParse(User.FindFirstValue("UserId"), out var id) ? id : 0;
+                query = query.Where(c => c.MasterID == userId);
+            }
+            else if (User.IsInRole("Заказчик"))
+            {
+                return Forbid();
             }
 
-            var comment = await _context.Comments
-                .FirstOrDefaultAsync(m => m.CommentID == id);
-            if (comment == null)
-            {
-                return NotFound();
-            }
-
-            return View(comment);
+            return View(await query.OrderByDescending(c => c.CommentID).ToListAsync());
         }
 
-        // GET: Comments/Create
-        public IActionResult Create()
-        {
-            return View();
-        }
-
-        // POST: Comments/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        // добавление комментария к заявке
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("CommentID,Message,MasterID,RequestID")] Comment comment)
+        public async Task<IActionResult> AddToRequest(int requestId, string message)
         {
-            if (ModelState.IsValid)
+            if (!User.IsInRole("Специалист"))
             {
-                _context.Add(comment);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                return Forbid();
             }
-            return View(comment);
+
+            var userId = int.TryParse(User.FindFirstValue("UserId"), out var id) ? id : 0;
+            if (userId == 0)
+            {
+                return Challenge();
+            }
+
+            message = (message ?? string.Empty).Trim();
+            if (message.Length == 0)
+            {
+                TempData["Info"] = "Введите текст комментария.";
+                return RedirectToAction("Details", "Requests", new { id = requestId });
+            }
+
+            var request = await _context.Requests.FirstOrDefaultAsync(r => r.RequestID == requestId);
+            if (request == null)
+            {
+                return NotFound();
+            }
+
+            if (request.MasterID != userId)
+            {
+                return Forbid();
+            }
+
+            _context.Comments.Add(new Comment
+            {
+                Message = message,
+                MasterID = userId,
+                RequestID = requestId
+            });
+
+            await _context.SaveChangesAsync();
+            TempData["Info"] = "Комментарий добавлен.";
+            return RedirectToAction("Details", "Requests", new { id = requestId });
         }
 
-        // GET: Comments/Edit/5
+        // редактирование комментария
+        [Authorize(Roles = "Оператор,Менеджер")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -81,9 +101,7 @@ namespace YP.Controllers
             return View(comment);
         }
 
-        // POST: Comments/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [Authorize(Roles = "Оператор,Менеджер")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("CommentID,Message,MasterID,RequestID")] Comment comment)
@@ -116,7 +134,8 @@ namespace YP.Controllers
             return View(comment);
         }
 
-        // GET: Comments/Delete/5
+        // удаление комментария
+        [Authorize(Roles = "Оператор,Менеджер")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -134,7 +153,7 @@ namespace YP.Controllers
             return View(comment);
         }
 
-        // POST: Comments/Delete/5
+        [Authorize(Roles = "Оператор,Менеджер")]
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)

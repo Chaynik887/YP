@@ -1,22 +1,21 @@
-﻿<div class="d-flex justify-content-between align-items-end mb-4 border-bottom">
+<div class="d-flex justify-content-between align-items-end mb-4 border-bottom">
 
     <ul class="nav nav-tabs border-0">
         <li class="nav-item">
-            <a class="nav-link @ActiveTab("Index")" asp-controller="Home" asp-action="Index">Заявки</a>
+            <a class="nav-link @ActiveTab("Index", "Requests")" asp-controller="Requests" asp-action="Index">Заявки</a>
         </li>
-        <li class="nav-item">
-            <a class="nav-link @ActiveTab("Comments")" asp-controller="Home" asp-action="Comments">Комментарии</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link @ActiveTab("Users")" asp-controller="Home" asp-action="Users">Пользователи</a>
-        </li>
-        <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button">Прочее</a>
-            <ul class="dropdown-menu">
-                <li><a class="dropdown-item" asp-controller="Home" asp-action="Statuses">Статусы</a></li>
-                <li><a class="dropdown-item" asp-controller="Home" asp-action="Roles">Роли</a></li>
-            </ul>
-        </li>
+        @if (User.IsInRole("Оператор") || User.IsInRole("Менеджер"))
+        {
+            <li class="nav-item">
+                <a class="nav-link @ActiveTab("Index", "Statistics")" asp-controller="Statistics" asp-action="Index">Статистика</a>
+            </li>
+        }
+        @if (User.IsInRole("Оператор") || User.IsInRole("Менеджер") || User.IsInRole("Специалист"))
+        {
+            <li class="nav-item">
+                <a class="nav-link @ActiveTab("Index", "Comments")" asp-controller="Comments" asp-action="Index">Комментарии</a>
+            </li>
+        }
     </ul>
 
 
@@ -36,6 +35,16 @@
 </div>
 
 @functions {
-    string ActiveTab(string action) =>
-        ViewContext.RouteData.Values["action"]?.ToString() == action ? "active" : "";
+    string ActiveTab(string action, string? controller = null)
+    {
+        var currentAction = ViewContext.RouteData.Values["action"]?.ToString();
+        var currentController = ViewContext.RouteData.Values["controller"]?.ToString();
+
+        if (!string.IsNullOrWhiteSpace(controller) && currentController != controller)
+        {
+            return "";
+        }
+
+        return currentAction == action ? "active" : "";
+    }
 }

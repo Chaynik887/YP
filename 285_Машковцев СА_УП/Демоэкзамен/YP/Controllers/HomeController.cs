@@ -17,28 +17,9 @@ namespace YP.Controllers
             _context = context;
         }
 
-        // заявки
-        public async Task<IActionResult> Index()
-        {
-            var requests = await _context.Requests
-                .Include(r => r.Status)
-                .Include(r => r.Client)
-                .Include(r => r.Master)
-                .ToListAsync();
-            return View(requests);
-        }
+        public IActionResult Index() => RedirectToAction("Index", "Requests");
 
-        // комментарии
-        public async Task<IActionResult> Comments()
-        {
-            var comments = await _context.Comments
-                .Include(c => c.Master)
-                .Include(c => c.Request)
-                .ToListAsync();
-            return View(comments);
-        }
-
-        // пользователи
+        [Authorize(Roles = "????????,????????")]
         public async Task<IActionResult> Users()
         {
             var users = await _context.Users
@@ -47,14 +28,14 @@ namespace YP.Controllers
             return View(users);
         }
 
-        // статусы
+        [Authorize(Roles = "????????,????????")]
         public async Task<IActionResult> Statuses()
         {
             var statuses = await _context.Statuses.ToListAsync();
             return View(statuses);
         }
 
-        // роли
+        [Authorize(Roles = "????????,????????")]
         public async Task<IActionResult> Roles()
         {
             var roles = await _context.Roles.ToListAsync();

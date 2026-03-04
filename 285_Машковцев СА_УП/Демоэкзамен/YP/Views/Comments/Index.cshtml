@@ -1,47 +1,33 @@
-﻿@model IEnumerable<YP.Models.Comment>
+@model IEnumerable<YP.Models.Comment>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Комментарии";
 }
 
-<h1>Index</h1>
+<partial name="_TabMenu" />
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
+<div class="text-center">
+    <h1 class="display-4">История комментариев</h1>
+</div>
+
+<table class="table table-bordered">
     <thead>
         <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Message)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.MasterID)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.RequestID)
-            </th>
-            <th></th>
+            <th>ID</th>
+            <th>Сообщение</th>
+            <th>Мастер</th>
+            <th>Заявка №</th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Message)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.MasterID)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.RequestID)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.CommentID">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.CommentID">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.CommentID">Delete</a>
-            </td>
-        </tr>
-}
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.CommentID</td>
+                <td>@item.Message</td>
+                <td>@item.Master?.Fio</td>
+                <td>@item.RequestID</td>
+            </tr>
+        }
     </tbody>
 </table>

@@ -1,0 +1,77 @@
+@model YP.Models.Request
+@{
+    ViewData["Title"] = "Заявка";
+    var comments = ViewBag.Comments as List<YP.Models.Comment> ?? new List<YP.Models.Comment>();
+    var canComment = (bool)(ViewBag.CanComment ?? false);
+}
+
+<partial name="_TabMenu" />
+
+@if (TempData["Info"] != null)
+{
+    <div class="alert alert-info">@TempData["Info"]</div>
+}
+
+<h3>Заявка №@Model.RequestID</h3>
+
+<table class="table table-bordered table-sm mt-3">
+    <tr><th style="width: 220px;">Дата</th><td>@Model.StartDate.ToShortDateString()</td></tr>
+    <tr><th>Оборудование</th><td>@Model.ClimateTechType (@Model.ClimateTechModel)</td></tr>
+    <tr><th>Проблема</th><td>@Model.ProblemDescription</td></tr>
+    <tr><th>Клиент</th><td>@Model.Client?.Fio</td></tr>
+    <tr><th>Телефон</th><td>@Model.Client?.Phone</td></tr>
+    <tr><th>Мастер</th><td>@(Model.Master?.Fio ?? "(не назначен)")</td></tr>
+    <tr><th>Статус</th><td>@Model.Status?.StatusName</td></tr>
+    <tr><th>Комплектующие</th><td>@(string.IsNullOrWhiteSpace(Model.RepairParts) ? "-" : Model.RepairParts)</td></tr>
+    <tr><th>Дата завершения</th><td>@(Model.CompletionDate?.ToShortDateString() ?? "-")</td></tr>
+</table>
+
+<div class="d-flex gap-2 mb-4">
+    <a asp-action="Edit" asp-route-id="@Model.RequestID" class="btn btn-primary">Изменить</a>
+    <a asp-action="Index" class="btn btn-outline-secondary">Назад</a>
+    @if (User.IsInRole("Оператор") || User.IsInRole("Менеджер"))
+    {
+        <a asp-action="Delete" asp-route-id="@Model.RequestID" class="btn btn-outline-danger">Удалить</a>
+    }
+</div>
+
+<h5>Комментарии</h5>
+
+@if (canComment)
+{
+    <form asp-controller="Comments" asp-action="AddToRequest" method="post" class="mb-3">
+        <input type="hidden" name="requestId" value="@Model.RequestID" />
+        <div class="input-group">
+            <input name="message" class="form-control" placeholder="Комментарий..." />
+            <button class="btn btn-outline-primary" type="submit">Добавить</button>
+        </div>
+    </form>
+}
+
+<table class="table table-bordered table-sm">
+    <thead>
+        <tr>
+            <th style="width: 80px;">ID</th>
+            <th>Сообщение</th>
+            <th style="width: 240px;">Мастер</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (!comments.Any())
+        {
+            <tr><td colspan="3" class="text-center">Комментариев нет</td></tr>
+        }
+        else
+        {
+            @foreach (var c in comments)
+            {
+                <tr>
+                    <td>@c.CommentID</td>
+                    <td>@c.Message</td>
+                    <td>@c.Master?.Fio</td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>
+
