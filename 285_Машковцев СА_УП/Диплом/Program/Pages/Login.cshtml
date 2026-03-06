@@ -1,0 +1,194 @@
+@page
+@model Program.Pages.LoginModel
+@{
+    ViewData["Title"] = "Авторизация";
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"]</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background-color: #f8f9fa;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            color: #212529;
+        }
+        .login-container {
+            background: #ffffff;
+            border-radius: 12px;
+            border: 1px solid #e9ecef;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            padding: 48px;
+            width: 100%;
+            max-width: 420px;
+        }
+        .login-header {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+        .login-header h2 {
+            color: #212529;
+            font-weight: 600;
+            font-size: 24px;
+            letter-spacing: -0.3px;
+            margin-bottom: 8px;
+        }
+        .login-header p {
+            color: #6c757d;
+            font-size: 14px;
+            margin: 0;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            font-size: 13px;
+            color: #495057;
+        }
+        .password-wrapper {
+            position: relative;
+        }
+        .form-control {
+            width: 100%;
+            padding: 10px 14px;
+            padding-right: 45px;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.2s ease;
+            background-color: #ffffff;
+        }
+        .form-control:focus {
+            outline: none;
+            border-color: #212529;
+            box-shadow: 0 0 0 3px rgba(33, 37, 41, 0.05);
+        }
+        .toggle-password {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 4px 8px;
+            color: #6c757d;
+            font-size: 14px;
+            transition: color 0.2s ease;
+        }
+        .toggle-password:hover {
+            color: #212529;
+        }
+        .toggle-password:focus {
+            outline: none;
+        }
+        .btn-login {
+            width: 100%;
+            padding: 12px 20px;
+            background: #212529;
+            border: none;
+            color: white;
+            font-weight: 500;
+            font-size: 14px;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            margin-top: 8px;
+        }
+        .btn-login:hover {
+            background: #000000;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .btn-login:active {
+            transform: translateY(1px);
+        }
+        .alert-danger {
+            border-radius: 8px;
+            margin-bottom: 24px;
+            padding: 12px 16px;
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+            font-size: 14px;
+        }
+        .text-muted {
+            color: #6c757d;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-header">
+            <h2>Вход в систему</h2>
+            <p class="text-muted">Компьютерный магазин</p>
+        </div>
+
+        @if (!string.IsNullOrEmpty(Model.ErrorMessage))
+        {
+            <div class="alert alert-danger" role="alert">
+                @Model.ErrorMessage
+            </div>
+        }
+
+        <form method="post">
+            <div class="form-group">
+                <label for="Login" class="form-label">Логин</label>
+                <input type="text" class="form-control" id="Login" name="Login" asp-for="Login" placeholder="Введите логин" required autofocus />
+            </div>
+
+            <div class="form-group">
+                <label for="Password" class="form-label">Пароль</label>
+                <div class="password-wrapper">
+                    <input type="password" class="form-control" id="Password" name="Password" asp-for="Password" placeholder="Введите пароль" required />
+                    <button type="button" class="toggle-password" onclick="togglePassword()" aria-label="Показать пароль">
+                        <span id="toggleIcon">👁️</span>
+                    </button>
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-login">Войти</button>
+        </form>
+    </div>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function togglePassword() {
+            const passwordInput = document.getElementById('Password');
+            const toggleIcon = document.getElementById('toggleIcon');
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                toggleIcon.textContent = '🙈';
+                toggleIcon.setAttribute('aria-label', 'Скрыть пароль');
+            } else {
+                passwordInput.type = 'password';
+                toggleIcon.textContent = '👁️';
+                toggleIcon.setAttribute('aria-label', 'Показать пароль');
+            }
+        }
+    </script>
+</body>
+</html>
+
+
+
+

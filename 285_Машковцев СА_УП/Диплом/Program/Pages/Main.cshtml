@@ -1,0 +1,2624 @@
+@page
+@model Program.Pages.MainModel
+@{
+    ViewData["Title"] = "Главная страница";
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"]</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+    html, body {
+        height: 100%;
+        overflow: hidden;
+        background-color: #f8f9fa;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        color: #212529;
+    }
+    .sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 100vh;
+        width: 260px;
+        background: #ffffff;
+        border-right: 1px solid #e9ecef;
+        padding: 24px 0;
+        box-shadow: 0 0 0 rgba(0,0,0,0);
+        z-index: 1000;
+        display: flex;
+        flex-direction: column;
+    }
+    .sidebar-header {
+        padding: 0 24px 24px 24px;
+        border-bottom: 1px solid #e9ecef;
+        margin-bottom: 16px;
+    }
+    .sidebar-header h4 {
+        margin: 0;
+        font-weight: 600;
+        font-size: 18px;
+        color: #212529;
+        letter-spacing: -0.3px;
+    }
+    .sidebar-menu {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        flex: 1;
+        overflow-y: auto;
+    }
+    .sidebar-footer {
+        border-top: 1px solid #e9ecef;
+        padding: 16px 24px;
+        margin-top: auto;
+        flex-shrink: 0;
+    }
+    .sidebar-menu li {
+        margin: 0;
+    }
+    .sidebar-menu a {
+        display: block;
+        padding: 12px 24px;
+        color: #495057;
+        text-decoration: none;
+        transition: all 0.2s ease;
+        border-left: 3px solid transparent;
+        font-size: 14px;
+        font-weight: 500;
+    }
+    .sidebar-menu a:hover {
+        background-color: #f8f9fa;
+        color: #212529;
+        border-left-color: #dee2e6;
+    }
+    .sidebar-menu a.active {
+        background-color: #f8f9fa;
+        color: #212529;
+        border-left-color: #212529;
+        font-weight: 600;
+    }
+    .main-content {
+        margin-left: 260px;
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        background-color: #f8f9fa;
+    }
+    .top-bar {
+        background: #ffffff;
+        padding: 16px 32px;
+        border-bottom: 1px solid #e9ecef;
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        flex-shrink: 0;
+    }
+    .user-info {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+    .user-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: #212529;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: 600;
+        font-size: 14px;
+    }
+    .user-info > div > div:first-child {
+        font-weight: 600;
+        font-size: 14px;
+        color: #212529;
+    }
+    .user-info > div > div:last-child {
+        font-size: 12px;
+        color: #6c757d;
+    }
+    .content-area {
+        background: #ffffff;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        padding: 32px;
+        margin: 24px;
+        border-radius: 12px;
+        border: 1px solid #e9ecef;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+    .search-box {
+        margin-bottom: 24px;
+    }
+    .search-box input {
+        width: 100%;
+        padding: 10px 16px;
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+        font-size: 14px;
+        transition: all 0.2s ease;
+        background-color: #ffffff;
+    }
+    .search-box input:focus {
+        outline: none;
+        border-color: #212529;
+        box-shadow: 0 0 0 3px rgba(33, 37, 41, 0.05);
+    }
+    .filters-container {
+        display: flex;
+        gap: 12px;
+        margin-bottom: 24px;
+        flex-wrap: wrap;
+        align-items: flex-end;
+    }
+    .filter-group {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+    }
+    .filter-group label {
+        font-size: 12px;
+        font-weight: 500;
+        color: #6c757d;
+    }
+    .filter-group select,
+    .filter-group input[type="date"] {
+        padding: 8px 12px;
+        border: 1px solid #dee2e6;
+        border-radius: 6px;
+        font-size: 14px;
+        background-color: #ffffff;
+        transition: all 0.2s ease;
+        min-width: 150px;
+    }
+    .filter-group select:focus,
+    .filter-group input[type="date"]:focus {
+        outline: none;
+        border-color: #212529;
+        box-shadow: 0 0 0 3px rgba(33, 37, 41, 0.05);
+    }
+    .btn-filter {
+        padding: 8px 16px;
+        background: #212529;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+    .btn-filter:hover {
+        background: #000000;
+    }
+    .btn-clear-filter {
+        padding: 8px 16px;
+        background: #f8f9fa;
+        color: #495057;
+        border: 1px solid #dee2e6;
+        border-radius: 6px;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+    .btn-clear-filter:hover {
+        background: #e9ecef;
+        border-color: #212529;
+        color: #212529;
+    }
+    .table-container {
+        flex: 1;
+        overflow: auto;
+    }
+    table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+        border: 1px solid #e9ecef;
+        border-radius: 8px;
+        overflow: hidden;
+        background-color: #ffffff;
+    }
+    table th {
+        background-color: #f8f9fa;
+        padding: 14px 16px;
+        text-align: left;
+        font-weight: 600;
+        font-size: 13px;
+        color: #6c757d;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        border-bottom: 1px solid #e9ecef;
+        border-right: 1px solid #e9ecef;
+    }
+    table th:last-child {
+        border-right: none;
+    }
+    table td {
+        padding: 16px;
+        border-bottom: 1px solid #e9ecef;
+        border-right: 1px solid #e9ecef;
+        font-size: 14px;
+        color: #212529;
+        background-color: #ffffff;
+    }
+    table td:last-child {
+        border-right: none;
+    }
+    table tr:last-child td {
+        border-bottom: none;
+    }
+    table tr:hover td {
+        background-color: #f8f9fa;
+    }
+    /* ограничение ширины столбца описания */
+    table th:nth-child(2),
+    table td:nth-child(2) {
+        max-width: 300px;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        white-space: normal;
+    }
+    .badge {
+        padding: 4px 10px;
+        border-radius: 6px;
+        font-size: 12px;
+        font-weight: 500;
+        display: inline-block;
+    }
+    .badge-success {
+        background-color: #d4edda;
+        color: #155724;
+    }
+    .badge-danger {
+        background-color: #f8d7da;
+        color: #721c24;
+    }
+    .btn-logout {
+        background: #212529;
+        color: white;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        font-size: 13px;
+        font-weight: 500;
+    }
+    .btn-logout:hover {
+        background: #000000;
+    }
+    .btn-add {
+        background: #212529;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 8px;
+        cursor: pointer;
+        margin-bottom: 0;
+        font-weight: 500;
+        font-size: 14px;
+        transition: all 0.2s ease;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    }
+    .btn-add:hover {
+        background: #000000;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .btn-edit {
+        background: #ffffff;
+        color: #212529;
+        border: 1px solid #dee2e6;
+        padding: 6px 12px;
+        border-radius: 6px;
+        cursor: pointer;
+        margin-right: 6px;
+        font-size: 13px;
+        font-weight: 500;
+        transition: all 0.2s ease;
+    }
+    .btn-edit:hover {
+        background: #f8f9fa;
+        border-color: #212529;
+        color: #212529;
+    }
+    .btn-delete {
+        background: #ffffff;
+        color: #dc3545;
+        border: 1px solid #dc3545;
+        padding: 6px 12px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 13px;
+        font-weight: 500;
+        transition: all 0.2s ease;
+    }
+    .btn-delete:hover {
+        background: #dc3545;
+        color: white;
+    }
+    .table-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 24px;
+    }
+    .table-header h4 {
+        margin: 0;
+        font-size: 20px;
+        font-weight: 600;
+        color: #212529;
+        letter-spacing: -0.3px;
+    }
+    /* модальные окна */
+    .modal-content {
+        border-radius: 12px;
+        border: 1px solid #e9ecef;
+        box-shadow: 0 4px 24px rgba(0,0,0,0.1);
+    }
+    .modal-header {
+        border-bottom: 1px solid #e9ecef;
+        padding: 20px 24px;
+    }
+    .modal-title {
+        font-weight: 600;
+        font-size: 18px;
+        color: #212529;
+    }
+    .modal-body {
+        padding: 24px;
+    }
+    .modal-footer {
+        border-top: 1px solid #e9ecef;
+        padding: 16px 24px;
+    }
+    .form-label {
+        font-weight: 500;
+        font-size: 13px;
+        color: #495057;
+        margin-bottom: 6px;
+    }
+    .form-control {
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+        padding: 10px 14px;
+        font-size: 14px;
+        transition: all 0.2s ease;
+    }
+    .form-control:focus {
+        border-color: #212529;
+        box-shadow: 0 0 0 3px rgba(33, 37, 41, 0.05);
+        outline: none;
+    }
+    .btn-primary {
+        background: #212529;
+        border: none;
+        color: white;
+        padding: 10px 20px;
+        border-radius: 8px;
+        font-weight: 500;
+        transition: all 0.2s ease;
+    }
+    .btn-primary:hover {
+        background: #000000;
+    }
+    .btn-secondary {
+        background: #ffffff;
+        border: 1px solid #dee2e6;
+        color: #495057;
+        padding: 10px 20px;
+        border-radius: 8px;
+        font-weight: 500;
+        transition: all 0.2s ease;
+    }
+    .btn-secondary:hover {
+        background: #f8f9fa;
+        border-color: #212529;
+        color: #212529;
+    }
+    /* скроллбар */
+    .table-container::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+    }
+    .table-container::-webkit-scrollbar-track {
+        background: #f8f9fa;
+        border-radius: 4px;
+    }
+    .table-container::-webkit-scrollbar-thumb {
+        background: #dee2e6;
+        border-radius: 4px;
+    }
+    .table-container::-webkit-scrollbar-thumb:hover {
+        background: #adb5bd;
+    }
+    /* элементы форм в модальных окнах */
+    .sale-item, .service-order-item, .supply-item {
+        background: #f8f9fa;
+        border: 1px solid #e9ecef;
+        border-radius: 8px;
+        padding: 16px;
+        margin-bottom: 12px;
+    }
+    .form-select {
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+        padding: 10px 14px;
+        font-size: 14px;
+        transition: all 0.2s ease;
+        background-color: #ffffff;
+    }
+    .form-select:focus {
+        border-color: #212529;
+        box-shadow: 0 0 0 3px rgba(33, 37, 41, 0.05);
+        outline: none;
+    }
+    .form-check-input {
+        width: 18px;
+        height: 18px;
+        border: 2px solid #dee2e6;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+    .form-check-input:checked {
+        background-color: #212529;
+        border-color: #212529;
+    }
+    .form-check-input:focus {
+        box-shadow: 0 0 0 3px rgba(33, 37, 41, 0.1);
+    }
+    .form-check-label {
+        font-size: 14px;
+        color: #495057;
+        margin-left: 8px;
+        cursor: pointer;
+    }
+    textarea.form-control {
+        resize: vertical;
+        min-height: 80px;
+    }
+    .btn-sm {
+        padding: 6px 12px;
+        font-size: 13px;
+        border-radius: 6px;
+        font-weight: 500;
+    }
+    .btn-danger.btn-sm {
+        background: #ffffff;
+        color: #dc3545;
+        border: 1px solid #dc3545;
+    }
+    .btn-danger.btn-sm:hover {
+        background: #dc3545;
+        color: white;
+    }
+    .btn-secondary.btn-sm {
+        background: #f8f9fa;
+        border: 1px solid #dee2e6;
+        color: #495057;
+    }
+    .btn-secondary.btn-sm:hover {
+        background: #e9ecef;
+        border-color: #212529;
+        color: #212529;
+    }
+    strong {
+        font-weight: 600;
+        color: #212529;
+    }
+    /* уведомления о низком остатке товаров */
+    .sidebar-stock-alert {
+        background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+        border: 1px solid #ffc107;
+        border-radius: 6px;
+        padding: 8px 12px;
+        margin-top: 8px;
+    }
+    .sidebar-stock-alert-header {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        margin-bottom: 6px;
+        font-size: 12px;
+        font-weight: 600;
+        color: #856404;
+    }
+    .sidebar-stock-alert-icon {
+        font-size: 14px;
+    }
+    .sidebar-stock-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        max-height: 120px;
+        overflow-y: auto;
+    }
+    .sidebar-stock-list li {
+        padding: 4px 0;
+        font-size: 11px;
+        color: #856404;
+        border-bottom: 1px solid rgba(255, 193, 7, 0.2);
+    }
+    .sidebar-stock-list li:last-child {
+        border-bottom: none;
+    }
+    .sidebar-stock-list li strong {
+        display: block;
+        margin-bottom: 2px;
+        font-size: 11px;
+    }
+    .sidebar-stock-quantity {
+        font-weight: 600;
+        padding: 1px 4px;
+        border-radius: 3px;
+        font-size: 10px;
+    }
+    .sidebar-stock-low {
+        color: #856404;
+        background-color: #fff3cd;
+    }
+    .sidebar-stock-zero {
+        color: #721c24;
+        background-color: #f8d7da;
+    }
+    .sidebar-stock-list::-webkit-scrollbar {
+        width: 4px;
+    }
+    .sidebar-stock-list::-webkit-scrollbar-track {
+        background: rgba(255, 193, 7, 0.1);
+        border-radius: 2px;
+    }
+    .sidebar-stock-list::-webkit-scrollbar-thumb {
+        background: #ffc107;
+        border-radius: 2px;
+    }
+    .stock-quantity {
+        font-weight: 600;
+        padding: 2px 8px;
+        border-radius: 4px;
+    }
+    .stock-low {
+        color: #856404;
+        background-color: #fff3cd;
+    }
+    .stock-zero {
+        color: #721c24;
+        background-color: #f8d7da;
+    }
+    /* выделение строк с низким остатком в таблице */
+    .low-stock-row {
+        background-color: #fff3cd !important;
+    }
+    .low-stock-row:hover {
+        background-color: #ffeaa7 !important;
+    }
+    .stock-badge {
+        font-weight: 600;
+        padding: 4px 10px;
+        border-radius: 6px;
+        display: inline-block;
+        font-size: 13px;
+    }
+    .stock-low-badge {
+        color: #856404;
+        background-color: #fff3cd;
+        border: 1px solid #ffc107;
+    }
+    .stock-zero-badge {
+        color: #721c24;
+        background-color: #f8d7da;
+        border: 1px solid #dc3545;
+    }
+    </style>
+</head>
+<body>
+<div class="sidebar">
+    <div class="sidebar-header">
+        <h4>Меню</h4>
+    </div>
+    <ul class="sidebar-menu">
+        <li>
+            <a href="?tab=products" class="@(Model.ActiveTab == "products" ? "active" : "")">
+                📦 Товары
+            </a>
+        </li>
+        <li>
+            <a href="?tab=services" class="@(Model.ActiveTab == "services" ? "active" : "")">
+                🔧 Услуги
+            </a>
+        </li>
+        <li>
+            <a href="?tab=users" class="@(Model.ActiveTab == "users" ? "active" : "")">
+                👥 Пользователи
+            </a>
+        </li>
+        <li>
+            <a href="?tab=roles" class="@(Model.ActiveTab == "roles" ? "active" : "")">
+                🛡️ Роли
+            </a>
+        </li>
+        <li>
+            <a href="?tab=sales" class="@(Model.ActiveTab == "sales" ? "active" : "")">
+                💰 Продажи
+            </a>
+        </li>
+        <li>
+            <a href="?tab=serviceorders" class="@(Model.ActiveTab == "serviceorders" ? "active" : "")">
+                🔨 Заказы услуг
+            </a>
+        </li>
+        <li>
+            <a href="?tab=supplies" class="@(Model.ActiveTab == "supplies" ? "active" : "")">
+                📦 Поставки
+            </a>
+        </li>
+        @if (Model.UserRole == "Директор" || Model.UserRole == "Заместитель директора")
+        {
+            <li>
+                <a href="?tab=reports" class="@(Model.ActiveTab == "reports" ? "active" : "")">
+                    📊 Отчёты
+                </a>
+            </li>
+        }
+    </ul>
+    
+    @* уведомления о низком остатке товаров внизу sidebar *@
+    @if (Model.LowStockProducts.Any())
+    {
+        <div class="sidebar-footer">
+            <div class="sidebar-stock-alert">
+                <div class="sidebar-stock-alert-header">
+                    <span class="sidebar-stock-alert-icon">⚠️</span>
+                    <span>Низкий остаток (@Model.LowStockProducts.Count)</span>
+                </div>
+                <ul class="sidebar-stock-list">
+                    @foreach (var product in Model.LowStockProducts.Take(5))
+                    {
+                        <li>
+                            <strong>@product.Name</strong>
+                            <span class="sidebar-stock-quantity @(product.StockQuantity == 0 ? "sidebar-stock-zero" : "sidebar-stock-low")">
+                                @product.StockQuantity шт.
+                            </span>
+                        </li>
+                    }
+                    @if (Model.LowStockProducts.Count > 5)
+                    {
+                        <li style="font-style: italic; color: #6c757d;">
+                            и еще @(Model.LowStockProducts.Count - 5)...
+                        </li>
+                    }
+                </ul>
+            </div>
+        </div>
+    }
+</div>
+
+<div class="main-content">
+    <div class="top-bar">
+        <div class="user-info">
+            <div class="user-avatar">
+                @if (!string.IsNullOrEmpty(Model.UserName))
+                {
+                    @Model.UserName.Substring(0, 1).ToUpper()
+                }
+            </div>
+            <div>
+                <div style="font-weight: 600;">@Model.UserName</div>
+                <div style="font-size: 0.85em; color: #666;">@Model.UserRole</div>
+            </div>
+            <form method="post" asp-page="/Logout" style="margin: 0;">
+                <button type="submit" class="btn-logout">Выйти</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="content-area">
+        @if (Model.ActiveTab != "roles")
+        {
+            <form method="get" id="searchForm">
+                <input type="hidden" name="tab" value="@Model.ActiveTab" />
+                <div class="search-box">
+                    <input type="text" name="search" placeholder="Поиск..." value="@Model.SearchQuery" onkeyup="if(event.key==='Enter') document.getElementById('searchForm').submit();" />
+                </div>
+                
+                @if (Model.ActiveTab == "products" || Model.ActiveTab == "services" || Model.ActiveTab == "users")
+                {
+                    <div class="filters-container">
+                        <div class="filter-group">
+                            <label>Статус</label>
+                            <select name="filterActive" onchange="document.getElementById('searchForm').submit();">
+                                <option value="">Все</option>
+                                @if (Model.FilterActive == "active")
+                                {
+                                    <option value="active" selected>Активные</option>
+                                }
+                                else
+                                {
+                                    <option value="active">Активные</option>
+                                }
+                                @if (Model.FilterActive == "inactive")
+                                {
+                                    <option value="inactive" selected>Неактивные</option>
+                                }
+                                else
+                                {
+                                    <option value="inactive">Неактивные</option>
+                                }
+                            </select>
+                        </div>
+                        @if (Model.ActiveTab == "users")
+                        {
+                            <div class="filter-group">
+                                <label>Роль</label>
+                                <select name="filterRoleId" onchange="document.getElementById('searchForm').submit();">
+                                    <option value="">Все роли</option>
+                                    @foreach (var role in Model.Roles)
+                                    {
+                                        @if (Model.FilterRoleId == role.RoleId)
+                                        {
+                                            <option value="@role.RoleId" selected>@role.RoleName</option>
+                                        }
+                                        else
+                                        {
+                                            <option value="@role.RoleId">@role.RoleName</option>
+                                        }
+                                    }
+                                </select>
+                            </div>
+                        }
+                        <button type="button" class="btn-clear-filter" onclick="clearFilters()">Сбросить фильтры</button>
+                    </div>
+                }
+                
+                @if (Model.ActiveTab == "sales")
+                {
+                    <div class="filters-container">
+                        <div class="filter-group">
+                            <label>Продавец</label>
+                            <select name="filterSellerId" onchange="document.getElementById('searchForm').submit();">
+                                <option value="">Все продавцы</option>
+                                @foreach (var user in Model.Users.Where(u => u.IsActive).OrderBy(u => u.FullName))
+                                {
+                                    @if (Model.FilterSellerId == user.UserId)
+                                    {
+                                        <option value="@user.UserId" selected>@user.FullName</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="@user.UserId">@user.FullName</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label>Дата от</label>
+                            <input type="date" name="filterDateFrom" value="@(Model.FilterDateFrom?.ToLocalTime().ToString("yyyy-MM-dd"))" onchange="document.getElementById('searchForm').submit();" />
+                        </div>
+                        <div class="filter-group">
+                            <label>Дата до</label>
+                            <input type="date" name="filterDateTo" value="@(Model.FilterDateTo?.ToLocalTime().ToString("yyyy-MM-dd"))" onchange="document.getElementById('searchForm').submit();" />
+                        </div>
+                        <button type="button" class="btn-clear-filter" onclick="clearFilters()">Сбросить фильтры</button>
+                    </div>
+                }
+                
+                @if (Model.ActiveTab == "serviceorders")
+                {
+                    <div class="filters-container">
+                        <div class="filter-group">
+                            <label>Мастер</label>
+                            <select name="filterMasterId" onchange="document.getElementById('searchForm').submit();">
+                                <option value="">Все мастера</option>
+                                @foreach (var user in Model.Users.Where(u => u.IsActive).OrderBy(u => u.FullName))
+                                {
+                                    @if (Model.FilterMasterId == user.UserId)
+                                    {
+                                        <option value="@user.UserId" selected>@user.FullName</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="@user.UserId">@user.FullName</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label>Дата от</label>
+                            <input type="date" name="filterDateFrom" value="@(Model.FilterDateFrom?.ToLocalTime().ToString("yyyy-MM-dd"))" onchange="document.getElementById('searchForm').submit();" />
+                        </div>
+                        <div class="filter-group">
+                            <label>Дата до</label>
+                            <input type="date" name="filterDateTo" value="@(Model.FilterDateTo?.ToLocalTime().ToString("yyyy-MM-dd"))" onchange="document.getElementById('searchForm').submit();" />
+                        </div>
+                        <button type="button" class="btn-clear-filter" onclick="clearFilters()">Сбросить фильтры</button>
+                    </div>
+                }
+                
+                @if (Model.ActiveTab == "supplies")
+                {
+                    <div class="filters-container">
+                        <div class="filter-group">
+                            <label>Дата от</label>
+                            <input type="date" name="filterDateFrom" value="@(Model.FilterDateFrom?.ToLocalTime().ToString("yyyy-MM-dd"))" onchange="document.getElementById('searchForm').submit();" />
+                        </div>
+                        <div class="filter-group">
+                            <label>Дата до</label>
+                            <input type="date" name="filterDateTo" value="@(Model.FilterDateTo?.ToLocalTime().ToString("yyyy-MM-dd"))" onchange="document.getElementById('searchForm').submit();" />
+                        </div>
+                        <button type="button" class="btn-clear-filter" onclick="clearFilters()">Сбросить фильтры</button>
+                    </div>
+                }
+            </form>
+        }
+
+        <div class="table-container">
+            @if (Model.ActiveTab == "products")
+            {
+                // проверка роли (директор или заместитель)
+                var isDirectorForProducts = !string.IsNullOrEmpty(Model.UserRole) && 
+                    (Model.UserRole.IndexOf("Директор", StringComparison.OrdinalIgnoreCase) >= 0 || 
+                     Model.UserRole.IndexOf("Заместитель", StringComparison.OrdinalIgnoreCase) >= 0);
+                
+                @* отладка (показываем роль) *@
+                @* <div style="background: yellow; padding: 10px; margin-bottom: 10px;">Роль: @Model.UserRole | isDirector: @isDirectorForProducts</div> *@
+                <div class="table-header">
+                    <h4>Товары</h4>
+                    <button type="button" class="btn-add" data-bs-toggle="modal" data-bs-target="#productModal" onclick="openProductModal(null, '', '', '', '', 0, true)">+ Добавить товар</button>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Название</th>
+                            <th>Описание</th>
+                            <th>Цена продажи</th>
+                            @if (isDirectorForProducts)
+                            {
+                                <th>Закупочная цена</th>
+                                <th>Наценка</th>
+                            }
+                            <th>Количество</th>
+                            <th>Статус</th>
+                            <th>Действия</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.Products.Any())
+                        {
+                            @foreach (var product in Model.Products)
+                            {
+                                <tr class="@(product.IsActive && product.StockQuantity < 5 ? "low-stock-row" : "")">
+                                    <td>@product.Name</td>
+                                    <td>@(product.Description ?? "-")</td>
+                                    <td>@product.Price.ToString("N2") ₽</td>
+                                    @if (isDirectorForProducts)
+                                    {
+                                        <td>@product.CostPrice.ToString("N2") ₽</td>
+                                        <td>
+                                            @if (product.CostPrice > 0)
+                                            {
+                                                var markup = product.Price - product.CostPrice;
+                                                var markupPercent = (markup / product.CostPrice * 100);
+                                                <span>@markup.ToString("N2") ₽ (@markupPercent.ToString("N1")%)</span>
+                                            }
+                                            else
+                                            {
+                                                <span style="color: #6c757d;">-</span>
+                                            }
+                                        </td>
+                                    }
+                                    <td>
+                                        @if (product.IsActive && product.StockQuantity < 5)
+                                        {
+                                            <span class="stock-badge @(product.StockQuantity == 0 ? "stock-zero-badge" : "stock-low-badge")">
+                                                @product.StockQuantity
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            @product.StockQuantity
+                                        }
+                                    </td>
+                                    <td>
+                                        <span class="badge @(product.IsActive ? "badge-success" : "badge-danger")">
+                                            @(product.IsActive ? "Активен" : "Неактивен")
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <button type="button" class="btn-edit" data-bs-toggle="modal" data-bs-target="#productModal" 
+                                                data-product-id="@product.ProductId" 
+                                                data-product-name="@product.Name" 
+                                                data-product-description="@(product.Description ?? "")" 
+                                                data-product-price="@product.Price.ToString(System.Globalization.CultureInfo.InvariantCulture)" 
+                                                data-product-costprice="@product.CostPrice.ToString(System.Globalization.CultureInfo.InvariantCulture)" 
+                                                data-product-stock="@product.StockQuantity" 
+                                                data-product-active="@product.IsActive.ToString().ToLower()"
+                                                onclick="openProductModalFromButton(this)">✏️ Редактировать</button>
+                                        <button type="button" class="btn-delete" onclick="if(confirm('Вы уверены, что хотите удалить этот товар?')) { location.href='?tab=products&action=delete&id=@product.ProductId'; }">🗑️ Удалить</button>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="@(isDirectorForProducts ? 8 : 6)" style="text-align: center; padding: 20px;">
+                                    Товары не найдены
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+            else if (Model.ActiveTab == "services")
+            {
+                <div class="table-header">
+                    <h4>Услуги</h4>
+                    <button type="button" class="btn-add" data-bs-toggle="modal" data-bs-target="#serviceModal" onclick="openServiceModal(null)">+ Добавить услугу</button>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Название</th>
+                            <th>Описание</th>
+                            <th>Цена</th>
+                            <th>Статус</th>
+                            <th>Действия</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.Services.Any())
+                        {
+                            @foreach (var service in Model.Services)
+                            {
+                                <tr>
+                                    <td>@service.Name</td>
+                                    <td>@(service.Description ?? "-")</td>
+                                    <td>@service.Price.ToString("C")</td>
+                                    <td>
+                                        <span class="badge @(service.IsActive ? "badge-success" : "badge-danger")">
+                                            @(service.IsActive ? "Активна" : "Неактивна")
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <button type="button" class="btn-edit" data-bs-toggle="modal" data-bs-target="#serviceModal" 
+                                                data-service-id="@service.ServiceId" 
+                                                data-service-name="@service.Name" 
+                                                data-service-description="@(service.Description ?? "")" 
+                                                data-service-price="@service.Price.ToString(System.Globalization.CultureInfo.InvariantCulture)" 
+                                                data-service-active="@service.IsActive.ToString().ToLower()"
+                                                onclick="openServiceModalFromButton(this)">✏️ Редактировать</button>
+                                        <button type="button" class="btn-delete" onclick="if(confirm('Вы уверены, что хотите удалить эту услугу?')) { location.href='?tab=services&action=delete&id=@service.ServiceId'; }">🗑️ Удалить</button>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="6" style="text-align: center; padding: 20px;">
+                                    Услуги не найдены
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+            else if (Model.ActiveTab == "users")
+            {
+                <div class="table-header">
+                    <h4>Пользователи</h4>
+                    <button type="button" class="btn-add" data-bs-toggle="modal" data-bs-target="#userModal" onclick="openUserModal(null)">+ Добавить пользователя</button>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Логин</th>
+                            <th>ФИО</th>
+                            <th>Телефон</th>
+                            <th>Роль</th>
+                            <th>Статус</th>
+                            <th>Действия</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.Users.Any())
+                        {
+                            @foreach (var user in Model.Users)
+                            {
+                                <tr>
+                                    <td>@user.Login</td>
+                                    <td>@user.FullName</td>
+                                    <td>@(user.Phone ?? "-")</td>
+                                    <td>@(user.Role?.RoleName ?? "-")</td>
+                                    <td>
+                                        <span class="badge @(user.IsActive ? "badge-success" : "badge-danger")">
+                                            @(user.IsActive ? "Активен" : "Неактивен")
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <button type="button" class="btn-edit" data-bs-toggle="modal" data-bs-target="#userModal" 
+                                                data-user-id="@user.UserId" 
+                                                data-user-login="@user.Login" 
+                                                data-user-fullname="@user.FullName" 
+                                                data-user-phone="@(user.Phone ?? "")" 
+                                                data-user-roleid="@user.RoleId" 
+                                                data-user-active="@user.IsActive.ToString().ToLower()"
+                                                onclick="openUserModalFromButton(this)">✏️ Редактировать</button>
+                                        <button type="button" class="btn-delete" onclick="if(confirm('Вы уверены, что хотите удалить этого пользователя?')) { location.href='?tab=users&action=delete&id=@user.UserId'; }">🗑️ Удалить</button>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="6" style="text-align: center; padding: 20px;">
+                                    Пользователи не найдены
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+            else if (Model.ActiveTab == "roles")
+            {
+                <div class="table-header">
+                    <h4>Роли</h4>
+                    <button type="button" class="btn-add" data-bs-toggle="modal" data-bs-target="#roleModal" onclick="openRoleModal(null)">+ Добавить роль</button>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Название роли</th>
+                            <th>Действия</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.Roles.Any())
+                        {
+                            @foreach (var role in Model.Roles)
+                            {
+                                <tr>
+                                    <td>@role.RoleName</td>
+                                    <td>
+                                        <button type="button" class="btn-edit" data-bs-toggle="modal" data-bs-target="#roleModal" onclick="openRoleModal(@role.RoleId, '@role.RoleName')">✏️ Редактировать</button>
+                                        <button type="button" class="btn-delete" onclick="if(confirm('Вы уверены, что хотите удалить эту роль?')) { location.href='?tab=roles&action=delete&id=@role.RoleId'; }">🗑️ Удалить</button>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="2" style="text-align: center; padding: 20px;">
+                                    Роли не найдены
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+            else if (Model.ActiveTab == "sales")
+            {
+                <div class="table-header">
+                    <h4>Продажи</h4>
+                    <button type="button" class="btn-add" data-bs-toggle="modal" data-bs-target="#saleModal" onclick="openSaleModal()">+ Оформить продажу</button>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Дата</th>
+                            <th>Продавец</th>
+                            <th>Товаров</th>
+                            <th>Сумма</th>
+                            <th>Действия</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.Sales.Any())
+                        {
+                            @foreach (var sale in Model.Sales)
+                            {
+                                <tr>
+                                    <td>@sale.SaleDate.ToString("dd.MM.yyyy HH:mm")</td>
+                                    <td>@(sale.Seller?.FullName ?? "-")</td>
+                                    <td>@sale.SaleItems.Count</td>
+                                    <td>@sale.TotalAmount.ToString("C")</td>
+                                    <td>
+                                        <button type="button" class="btn-edit" data-bs-toggle="modal" data-bs-target="#saleDetailsModal" onclick="openSaleDetailsModal(@sale.SaleId)">👁️ Детали</button>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="5" style="text-align: center; padding: 20px;">
+                                    Продажи не найдены
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+            else if (Model.ActiveTab == "serviceorders")
+            {
+                <div class="table-header">
+                    <h4>Заказы услуг</h4>
+                    <button type="button" class="btn-add" data-bs-toggle="modal" data-bs-target="#serviceOrderModal" onclick="openServiceOrderModal()">+ Создать заказ</button>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Дата</th>
+                            <th>Мастер</th>
+                            <th>Услуг</th>
+                            <th>Сумма</th>
+                            <th>Действия</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.ServiceOrders.Any())
+                        {
+                            @foreach (var serviceOrder in Model.ServiceOrders)
+                            {
+                                <tr>
+                                    <td>@serviceOrder.OrderDate.ToString("dd.MM.yyyy HH:mm")</td>
+                                    <td>@(serviceOrder.Master?.FullName ?? "-")</td>
+                                    <td>@serviceOrder.ServiceOrderItems.Count</td>
+                                    <td>@((serviceOrder.TotalAmount ?? 0).ToString("C"))</td>
+                                    <td>
+                                        <button type="button" class="btn-edit" data-bs-toggle="modal" data-bs-target="#serviceOrderDetailsModal" onclick="openServiceOrderDetailsModal(@serviceOrder.OrderId)">👁️ Детали</button>
+                                        <button type="button" class="btn-delete" onclick="if(confirm('Вы уверены, что хотите удалить этот заказ?')) { location.href='?tab=serviceorders&action=delete&id=@serviceOrder.OrderId'; }">🗑️ Удалить</button>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="5" style="text-align: center; padding: 20px;">
+                                    Заказы услуг не найдены
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+            else if (Model.ActiveTab == "supplies")
+            {
+                var isDirector = Model.UserRole == "Директор" || Model.UserRole == "Заместитель директора";
+                
+                @if (TempData["Error"] != null)
+                {
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        @TempData["Error"]
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                }
+                
+                <div class="table-header">
+                    <h4>Поставки</h4>
+                    <button type="button" class="btn-add" data-bs-toggle="modal" data-bs-target="#supplyModal" onclick="openSupplyModal()">+ Оформить поставку</button>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Дата</th>
+                            <th>Поставщик</th>
+                            <th>Принял</th>
+                            <th>Позиций</th>
+                            @if (isDirector)
+                            {
+                                <th>Сумма</th>
+                            }
+                            <th>Действия</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.Supplies.Any())
+                        {
+                            @foreach (var supply in Model.Supplies)
+                            {
+                                <tr>
+                                    <td>@supply.SupplyDate.ToString("dd.MM.yyyy HH:mm")</td>
+                                    <td>@(string.IsNullOrWhiteSpace(supply.SupplierName) ? "-" : supply.SupplierName)</td>
+                                    <td>@(supply.ReceivedByUser?.FullName ?? "-")</td>
+                                    <td>@supply.SupplyItems.Count</td>
+                                    @if (isDirector)
+                                    {
+                                        <td>@supply.TotalCost.ToString("N2") ₽</td>
+                                    }
+                                    <td>
+                                        <button type="button" class="btn-edit" data-bs-toggle="modal" data-bs-target="#supplyDetailsModal" onclick="openSupplyDetailsModal(@supply.SupplyId)">👁️ Детали</button>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="@(isDirector ? 6 : 5)" style="text-align: center; padding: 20px;">
+                                    Поставки не найдены
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+            else if (Model.ActiveTab == "reports")
+            {
+                <div class="table-header">
+                    <h4>Отчёты</h4>
+                </div>
+                
+                <div style="margin-bottom: 24px;">
+                    <form method="get" id="reportForm">
+                        <input type="hidden" name="tab" value="reports" />
+                        @{
+                            var currentReportType = Request.Query["reportType"].ToString();
+                            if (string.IsNullOrEmpty(currentReportType)) currentReportType = "sales";
+                        }
+                        <div class="filters-container">
+                            <div class="filter-group">
+                                <label>Тип отчёта</label>
+                                <select name="reportType" class="form-select" onchange="document.getElementById('reportForm').submit();">
+                                    @if (currentReportType == "sales")
+                                    {
+                                        <option value="sales" selected>Продажи</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="sales">Продажи</option>
+                                    }
+                                    @if (currentReportType == "services")
+                                    {
+                                        <option value="services" selected>Услуги</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="services">Услуги</option>
+                                    }
+                                    @if (currentReportType == "products")
+                                    {
+                                        <option value="products" selected>Товары</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="products">Товары</option>
+                                    }
+                                    @if (currentReportType == "financial")
+                                    {
+                                        <option value="financial" selected>Финансовый</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="financial">Финансовый</option>
+                                    }
+                                </select>
+                            </div>
+                            <div class="filter-group">
+                                <label>Дата от</label>
+                                <input type="date" name="filterDateFrom" class="form-control" value="@(Model.FilterDateFrom?.ToLocalTime().ToString("yyyy-MM-dd"))" onchange="document.getElementById('reportForm').submit();" />
+                            </div>
+                            <div class="filter-group">
+                                <label>Дата до</label>
+                                <input type="date" name="filterDateTo" class="form-control" value="@(Model.FilterDateTo?.ToLocalTime().ToString("yyyy-MM-dd"))" onchange="document.getElementById('reportForm').submit();" />
+                            </div>
+                            @if (currentReportType == "sales")
+                            {
+                                <div class="filter-group">
+                                    <label>Продавец</label>
+                                    <select name="filterSellerId" class="form-select" onchange="document.getElementById('reportForm').submit();">
+                                        <option value="">Все продавцы</option>
+                                        @foreach (var user in Model.Users.Where(u => u.IsActive).OrderBy(u => u.FullName))
+                                        {
+                                            @if (Model.FilterSellerId == user.UserId)
+                                            {
+                                                <option value="@user.UserId" selected>@user.FullName</option>
+                                            }
+                                            else
+                                            {
+                                                <option value="@user.UserId">@user.FullName</option>
+                                            }
+                                        }
+                                    </select>
+                                </div>
+                            }
+                            @if (currentReportType == "services")
+                            {
+                                <div class="filter-group">
+                                    <label>Мастер</label>
+                                    <select name="filterMasterId" class="form-select" onchange="document.getElementById('reportForm').submit();">
+                                        <option value="">Все мастера</option>
+                                        @foreach (var user in Model.Users.Where(u => u.IsActive).OrderBy(u => u.FullName))
+                                        {
+                                            @if (Model.FilterMasterId == user.UserId)
+                                            {
+                                                <option value="@user.UserId" selected>@user.FullName</option>
+                                            }
+                                            else
+                                            {
+                                                <option value="@user.UserId">@user.FullName</option>
+                                            }
+                                        }
+                                    </select>
+                                </div>
+                            }
+                        </div>
+                    </form>
+                </div>
+                
+                @if (Model.ReportData != null)
+                {
+                    @if (Model.ReportData.SalesReport != null)
+                    {
+                        <div style="margin-bottom: 24px;">
+                            <h5 style="margin-bottom: 16px;">📊 Отчёт по продажам</h5>
+                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 24px;">
+                                <div style="background: #f8f9fa; padding: 16px; border-radius: 8px;">
+                                    <div style="font-size: 12px; color: #6c757d; margin-bottom: 4px;">Общая выручка</div>
+                                    <div style="font-size: 20px; font-weight: 600;">@Model.ReportData.SalesReport.TotalRevenue.ToString("N2") ₽</div>
+                                </div>
+                                <div style="background: #f8f9fa; padding: 16px; border-radius: 8px;">
+                                    <div style="font-size: 12px; color: #6c757d; margin-bottom: 4px;">Всего продаж</div>
+                                    <div style="font-size: 20px; font-weight: 600;">@Model.ReportData.SalesReport.TotalSales</div>
+                                </div>
+                                <div style="background: #f8f9fa; padding: 16px; border-radius: 8px;">
+                                    <div style="font-size: 12px; color: #6c757d; margin-bottom: 4px;">Средний чек</div>
+                                    <div style="font-size: 20px; font-weight: 600;">@Model.ReportData.SalesReport.AverageSaleAmount.ToString("N2") ₽</div>
+                                </div>
+                            </div>
+                            
+                            @if (Model.ReportData.SalesReport.SalesBySeller.Any())
+                            {
+                                <h6 style="margin-bottom: 12px;">Продажи по продавцам</h6>
+                                <table style="margin-bottom: 24px;">
+                                    <thead>
+                                        <tr>
+                                            <th>Продавец</th>
+                                            <th>Продаж</th>
+                                            <th>Выручка</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var seller in Model.ReportData.SalesReport.SalesBySeller)
+                                        {
+                                            <tr>
+                                                <td>@seller.SellerName</td>
+                                                <td>@seller.TotalSales</td>
+                                                <td>@seller.TotalRevenue.ToString("N2") ₽</td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            }
+                            
+                            @if (Model.ReportData.SalesReport.DailySales.Any())
+                            {
+                                <h6 style="margin-bottom: 12px;">Продажи по дням</h6>
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Дата</th>
+                                            <th>Продаж</th>
+                                            <th>Выручка</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var daily in Model.ReportData.SalesReport.DailySales)
+                                        {
+                                            <tr>
+                                                <td>@daily.Date.ToString("dd.MM.yyyy")</td>
+                                                <td>@daily.SalesCount</td>
+                                                <td>@daily.Revenue.ToString("N2") ₽</td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            }
+                        </div>
+                    }
+                    
+                    @if (Model.ReportData.ServicesReport != null)
+                    {
+                        <div style="margin-bottom: 24px;">
+                            <h5 style="margin-bottom: 16px;">📊 Отчёт по услугам</h5>
+                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 24px;">
+                                <div style="background: #f8f9fa; padding: 16px; border-radius: 8px;">
+                                    <div style="font-size: 12px; color: #6c757d; margin-bottom: 4px;">Общая выручка</div>
+                                    <div style="font-size: 20px; font-weight: 600;">@Model.ReportData.ServicesReport.TotalRevenue.ToString("N2") ₽</div>
+                                </div>
+                                <div style="background: #f8f9fa; padding: 16px; border-radius: 8px;">
+                                    <div style="font-size: 12px; color: #6c757d; margin-bottom: 4px;">Всего заказов</div>
+                                    <div style="font-size: 20px; font-weight: 600;">@Model.ReportData.ServicesReport.TotalOrders</div>
+                                </div>
+                                <div style="background: #f8f9fa; padding: 16px; border-radius: 8px;">
+                                    <div style="font-size: 12px; color: #6c757d; margin-bottom: 4px;">Средний чек</div>
+                                    <div style="font-size: 20px; font-weight: 600;">@Model.ReportData.ServicesReport.AverageOrderAmount.ToString("N2") ₽</div>
+                                </div>
+                            </div>
+                            
+                            @if (Model.ReportData.ServicesReport.ServicesByMaster.Any())
+                            {
+                                <h6 style="margin-bottom: 12px;">Услуги по мастерам</h6>
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Мастер</th>
+                                            <th>Заказов</th>
+                                            <th>Выручка</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var master in Model.ReportData.ServicesReport.ServicesByMaster)
+                                        {
+                                            <tr>
+                                                <td>@master.MasterName</td>
+                                                <td>@master.TotalOrders</td>
+                                                <td>@master.TotalRevenue.ToString("N2") ₽</td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            }
+                        </div>
+                    }
+                    
+                    @if (Model.ReportData.ProductsReport != null)
+                    {
+                        <div style="margin-bottom: 24px;">
+                            <h5 style="margin-bottom: 16px;">📊 Отчёт по товарам</h5>
+                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 24px;">
+                                <div style="background: #f8f9fa; padding: 16px; border-radius: 8px;">
+                                    <div style="font-size: 12px; color: #6c757d; margin-bottom: 4px;">Всего товаров</div>
+                                    <div style="font-size: 20px; font-weight: 600;">@Model.ReportData.ProductsReport.TotalProducts</div>
+                                </div>
+                                <div style="background: #f8f9fa; padding: 16px; border-radius: 8px;">
+                                    <div style="font-size: 12px; color: #6c757d; margin-bottom: 4px;">Активных</div>
+                                    <div style="font-size: 20px; font-weight: 600;">@Model.ReportData.ProductsReport.ActiveProducts</div>
+                                </div>
+                                <div style="background: #f8f9fa; padding: 16px; border-radius: 8px;">
+                                    <div style="font-size: 12px; color: #6c757d; margin-bottom: 4px;">Низкий остаток</div>
+                                    <div style="font-size: 20px; font-weight: 600;">@Model.ReportData.ProductsReport.LowStockProducts</div>
+                                </div>
+                                <div style="background: #f8f9fa; padding: 16px; border-radius: 8px;">
+                                    <div style="font-size: 12px; color: #6c757d; margin-bottom: 4px;">Стоимость склада</div>
+                                    <div style="font-size: 20px; font-weight: 600;">@Model.ReportData.ProductsReport.TotalStockValue.ToString("N2") ₽</div>
+                                </div>
+                            </div>
+                            
+                            @if (Model.ReportData.ProductsReport.TopSellingProducts.Any())
+                            {
+                                <h6 style="margin-bottom: 12px;">Топ продаваемых товаров</h6>
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Товар</th>
+                                            <th>Продано</th>
+                                            <th>Выручка</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var product in Model.ReportData.ProductsReport.TopSellingProducts)
+                                        {
+                                            <tr>
+                                                <td>@product.ProductName</td>
+                                                <td>@product.QuantitySold шт.</td>
+                                                <td>@product.Revenue.ToString("N2") ₽</td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            }
+                        </div>
+                    }
+                    
+                    @if (Model.ReportData.FinancialReport != null)
+                    {
+                        <div style="margin-bottom: 24px;">
+                            <h5 style="margin-bottom: 16px;">📊 Финансовый отчёт</h5>
+                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 24px;">
+                                <div style="background: #d4edda; padding: 16px; border-radius: 8px;">
+                                    <div style="font-size: 12px; color: #155724; margin-bottom: 4px;">Выручка от продаж</div>
+                                    <div style="font-size: 20px; font-weight: 600; color: #155724;">@Model.ReportData.FinancialReport.SalesRevenue.ToString("N2") ₽</div>
+                                </div>
+                                <div style="background: #d4edda; padding: 16px; border-radius: 8px;">
+                                    <div style="font-size: 12px; color: #155724; margin-bottom: 4px;">Выручка от услуг</div>
+                                    <div style="font-size: 20px; font-weight: 600; color: #155724;">@Model.ReportData.FinancialReport.ServicesRevenue.ToString("N2") ₽</div>
+                                </div>
+                                <div style="background: #f8d7da; padding: 16px; border-radius: 8px;">
+                                    <div style="font-size: 12px; color: #721c24; margin-bottom: 4px;">Затраты</div>
+                                    <div style="font-size: 20px; font-weight: 600; color: #721c24;">@Model.ReportData.FinancialReport.TotalCost.ToString("N2") ₽</div>
+                                </div>
+                                <div style="background: @(Model.ReportData.FinancialReport.Profit >= 0 ? "#d4edda" : "#f8d7da"); padding: 16px; border-radius: 8px;">
+                                    <div style="font-size: 12px; color: @(Model.ReportData.FinancialReport.Profit >= 0 ? "#155724" : "#721c24"); margin-bottom: 4px;">Прибыль</div>
+                                    <div style="font-size: 20px; font-weight: 600; color: @(Model.ReportData.FinancialReport.Profit >= 0 ? "#155724" : "#721c24");">@Model.ReportData.FinancialReport.Profit.ToString("N2") ₽</div>
+                                </div>
+                            </div>
+                            <div style="background: #f8f9fa; padding: 16px; border-radius: 8px;">
+                                <div style="font-size: 14px; margin-bottom: 8px;"><strong>Общая выручка:</strong> @Model.ReportData.FinancialReport.TotalRevenue.ToString("N2") ₽</div>
+                                <div style="font-size: 14px;"><strong>Рентабельность:</strong> @Model.ReportData.FinancialReport.ProfitMargin.ToString("N2")%</div>
+                            </div>
+                        </div>
+                    }
+                }
+            }
+        </div>
+    </div>
+</div>
+
+<!-- модальное окно для товаров -->
+<div class="modal fade" id="productModal" tabindex="-1" aria-labelledby="productModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="productModalLabel">Товар</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="post" asp-page-handler="SaveProduct">
+                <div class="modal-body">
+                    <input type="hidden" name="ProductId" id="productId" />
+                    <div class="mb-3">
+                        <label for="productName" class="form-label">Название *</label>
+                        <input type="text" class="form-control" id="productName" name="Name" required />
+                    </div>
+                    <div class="mb-3">
+                        <label for="productDescription" class="form-label">Описание</label>
+                        <textarea class="form-control" id="productDescription" name="Description" rows="3"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="productPrice" class="form-label">Цена продажи *</label>
+                        <input type="text" inputmode="decimal" class="form-control" id="productPrice" name="Price" required placeholder="0.00" />
+                    </div>
+                    @if (Model.UserRole == "Директор" || Model.UserRole == "Заместитель директора")
+                    {
+                        <div class="mb-3">
+                            <label for="productCostPrice" class="form-label">Закупочная цена</label>
+                            <input type="text" inputmode="decimal" class="form-control" id="productCostPrice" name="CostPrice" placeholder="0.00" />
+                            <small class="form-text text-muted">Цена, по которой товар был закуплен</small>
+                        </div>
+                    }
+                    <div class="mb-3">
+                        <label for="productStockQuantity" class="form-label">Количество на складе</label>
+                        <input type="number" class="form-control" id="productStockQuantity" name="StockQuantity" min="0" value="0" />
+                    </div>
+                    <div class="mb-3">
+                        <div class="form-check">
+                            <input type="hidden" name="IsActive" value="false" id="productIsActiveHidden" />
+                            <input class="form-check-input" type="checkbox" id="productIsActive" onchange="document.getElementById('productIsActiveHidden').value = this.checked ? 'true' : 'false';" checked />
+                            <label class="form-check-label" for="productIsActive">
+                                Активен
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                    <button type="submit" class="btn btn-primary">Сохранить</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- модальное окно для услуг -->
+<div class="modal fade" id="serviceModal" tabindex="-1" aria-labelledby="serviceModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="serviceModalLabel">Услуга</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="post" asp-page-handler="SaveService">
+                <div class="modal-body">
+                    <input type="hidden" name="ServiceId" id="serviceId" />
+                    <div class="mb-3">
+                        <label for="serviceName" class="form-label">Название *</label>
+                        <input type="text" class="form-control" id="serviceName" name="Name" required />
+                    </div>
+                    <div class="mb-3">
+                        <label for="serviceDescription" class="form-label">Описание</label>
+                        <textarea class="form-control" id="serviceDescription" name="Description" rows="3"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="servicePrice" class="form-label">Цена *</label>
+                        <input type="text" inputmode="decimal" class="form-control" id="servicePrice" name="Price" required placeholder="0.00" />
+                    </div>
+                    <div class="mb-3">
+                        <div class="form-check">
+                            <input type="hidden" name="IsActive" value="false" id="serviceIsActiveHidden" />
+                            <input class="form-check-input" type="checkbox" id="serviceIsActive" onchange="document.getElementById('serviceIsActiveHidden').value = this.checked ? 'true' : 'false';" checked />
+                            <label class="form-check-label" for="serviceIsActive">
+                                Активна
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                    <button type="submit" class="btn btn-primary">Сохранить</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- модальное окно для пользователей -->
+<div class="modal fade" id="userModal" tabindex="-1" aria-labelledby="userModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="userModalLabel">Пользователь</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="post" asp-page-handler="SaveUser">
+                <div class="modal-body">
+                    <input type="hidden" name="UserId" id="userId" />
+                    <div class="mb-3">
+                        <label for="userLogin" class="form-label">Логин *</label>
+                        <input type="text" class="form-control" id="userLogin" name="Login" required />
+                    </div>
+                    <div class="mb-3">
+                        <label for="userPassword" class="form-label">Пароль <span id="passwordRequired">*</span></label>
+                        <input type="password" class="form-control" id="userPassword" name="Password" />
+                        <small class="form-text text-muted" id="passwordHint">Оставьте пустым, если не хотите менять пароль</small>
+                    </div>
+                    <div class="mb-3">
+                        <label for="userFullName" class="form-label">ФИО *</label>
+                        <input type="text" class="form-control" id="userFullName" name="FullName" required />
+                    </div>
+                    <div class="mb-3">
+                        <label for="userPhone" class="form-label">Телефон</label>
+                        <input type="text" class="form-control" id="userPhone" name="Phone" />
+                    </div>
+                    <div class="mb-3">
+                        <label for="userRoleId" class="form-label">Роль *</label>
+                        <select class="form-select" id="userRoleId" name="RoleId" required>
+                            <option value="">Выберите роль</option>
+                            @foreach (var role in Model.Roles)
+                            {
+                                <option value="@role.RoleId">@role.RoleName</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <div class="form-check">
+                            <input type="hidden" name="IsActive" value="false" id="userIsActiveHidden" />
+                            <input class="form-check-input" type="checkbox" id="userIsActive" onchange="document.getElementById('userIsActiveHidden').value = this.checked ? 'true' : 'false';" checked />
+                            <label class="form-check-label" for="userIsActive">
+                                Активен
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                    <button type="submit" class="btn btn-primary">Сохранить</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- модальное окно для ролей -->
+<div class="modal fade" id="roleModal" tabindex="-1" aria-labelledby="roleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="roleModalLabel">Роль</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="post" asp-page-handler="SaveRole">
+                <div class="modal-body">
+                    <input type="hidden" name="RoleId" id="roleId" />
+                    <div class="mb-3">
+                        <label for="roleName" class="form-label">Название роли *</label>
+                        <input type="text" class="form-control" id="roleName" name="RoleName" required />
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                    <button type="submit" class="btn btn-primary">Сохранить</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- модальное окно для оформления продажи -->
+<div class="modal fade" id="saleModal" tabindex="-1" aria-labelledby="saleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="saleModalLabel">Оформить продажу</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="post" asp-page-handler="CreateSale" id="saleForm">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Продавец: <strong>@Model.UserName</strong></label>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Товары</label>
+                        <div id="saleItemsContainer">
+                            <!-- товары будут добавляться динамически -->
+                        </div>
+                        <button type="button" class="btn btn-sm btn-secondary mt-2" onclick="addSaleItem()">+ Добавить товар</button>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <strong>Итого: <span id="saleTotal">0.00</span> ₽</strong>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                    <button type="submit" class="btn btn-primary">Оформить продажу</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- модальное окно для деталей продажи -->
+<div class="modal fade" id="saleDetailsModal" tabindex="-1" aria-labelledby="saleDetailsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="saleDetailsModalLabel">Детали продажи</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="saleDetailsContent">
+                <!-- детали будут загружены динамически -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- модальное окно для создания заказа услуг -->
+<div class="modal fade" id="serviceOrderModal" tabindex="-1" aria-labelledby="serviceOrderModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="serviceOrderModalLabel">Создать заказ услуг</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="post" asp-page-handler="CreateServiceOrder" id="serviceOrderForm">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Мастер: <strong>@Model.UserName</strong></label>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Услуги</label>
+                        <div id="serviceOrderItemsContainer">
+                            <!-- услуги будут добавляться динамически -->
+                        </div>
+                        <button type="button" class="btn btn-sm btn-secondary mt-2" onclick="addServiceOrderItem()">+ Добавить услугу</button>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="serviceOrderNotes" class="form-label">Примечания</label>
+                        <textarea class="form-control" id="serviceOrderNotes" name="Notes" rows="3"></textarea>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <strong>Итого: <span id="serviceOrderTotal">0.00</span> ₽</strong>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                    <button type="button" class="btn btn-primary" onclick="submitServiceOrderForm()">Создать заказ</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- модальное окно для деталей заказа услуг -->
+<div class="modal fade" id="serviceOrderDetailsModal" tabindex="-1" aria-labelledby="serviceOrderDetailsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="serviceOrderDetailsModalLabel">Детали заказа услуг</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="serviceOrderDetailsContent">
+                <!-- детали будут загружены динамически -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- модальное окно для оформления поставки -->
+<div class="modal fade" id="supplyModal" tabindex="-1" aria-labelledby="supplyModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="supplyModalLabel">Оформить поставку</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="post" asp-page-handler="CreateSupply" id="supplyForm">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Принимает: <strong>@Model.UserName</strong></label>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="supplierName" class="form-label">Поставщик</label>
+                        <input type="text" class="form-control" id="supplierName" name="SupplierName" placeholder="Название поставщика (опционально)" />
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Товары</label>
+                        <div id="supplyItemsContainer">
+                            <!-- товары будут добавляться динамически -->
+                        </div>
+                        <button type="button" class="btn btn-sm btn-secondary mt-2" onclick="addSupplyItem()">+ Добавить товар</button>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="supplyNotes" class="form-label">Примечания</label>
+                        <textarea class="form-control" id="supplyNotes" name="Notes" rows="2"></textarea>
+                    </div>
+                    
+                    @if (Model.UserRole == "Директор" || Model.UserRole == "Заместитель директора")
+                    {
+                        <div class="mb-3">
+                            <strong>Итого: <span id="supplyTotal">0.00</span> ₽</strong>
+                        </div>
+                    }
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                    <button type="submit" class="btn btn-primary">Оформить поставку</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- модальное окно для деталей поставки -->
+<div class="modal fade" id="supplyDetailsModal" tabindex="-1" aria-labelledby="supplyDetailsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="supplyDetailsModalLabel">Детали поставки</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="supplyDetailsContent">
+                <!-- детали будут загружены динамически -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // автоматический поиск при вводе
+    const searchInput = document.querySelector('.search-box input');
+    if (searchInput) {
+        searchInput.addEventListener('input', function(e) {
+            const form = e.target.closest('form');
+            if (form) {
+                clearTimeout(this.searchTimeout);
+                this.searchTimeout = setTimeout(() => {
+                    form.submit();
+                }, 500);
+            }
+        });
+    }
+
+    // функции для открытия модальных окон
+    function openProductModal(id, name, description, price, costPrice, stockQuantity, isActive) {
+        document.getElementById('productId').value = id || '';
+        document.getElementById('productName').value = name || '';
+        document.getElementById('productDescription').value = description || '';
+        document.getElementById('productPrice').value = price || '';
+        const costPriceField = document.getElementById('productCostPrice');
+        if (costPriceField) {
+            costPriceField.value = costPrice || '';
+        }
+        document.getElementById('productStockQuantity').value = stockQuantity || 0;
+        const checkbox = document.getElementById('productIsActive');
+        const hiddenField = document.getElementById('productIsActiveHidden');
+        checkbox.checked = isActive !== false && isActive !== 'false';
+        hiddenField.value = checkbox.checked ? 'true' : 'false';
+        document.getElementById('productModalLabel').textContent = id ? 'Редактировать товар' : 'Добавить товар';
+    }
+
+    function openProductModalFromButton(button) {
+        const id = button.getAttribute('data-product-id');
+        const name = button.getAttribute('data-product-name') || '';
+        const description = button.getAttribute('data-product-description') || '';
+        const price = button.getAttribute('data-product-price') || '';
+        const costPrice = button.getAttribute('data-product-costprice') || '';
+        const stockQuantity = button.getAttribute('data-product-stock') || '0';
+        const isActive = button.getAttribute('data-product-active') === 'true';
+        openProductModal(id, name, description, price, costPrice, stockQuantity, isActive);
+    }
+
+    function openServiceModal(id, name, description, price, isActive) {
+        document.getElementById('serviceId').value = id || '';
+        document.getElementById('serviceName').value = name || '';
+        document.getElementById('serviceDescription').value = description || '';
+        document.getElementById('servicePrice').value = price || '';
+        const checkbox = document.getElementById('serviceIsActive');
+        const hiddenField = document.getElementById('serviceIsActiveHidden');
+        checkbox.checked = isActive !== false && isActive !== 'false';
+        hiddenField.value = checkbox.checked ? 'true' : 'false';
+        document.getElementById('serviceModalLabel').textContent = id ? 'Редактировать услугу' : 'Добавить услугу';
+    }
+
+    function openServiceModalFromButton(button) {
+        const id = button.getAttribute('data-service-id');
+        const name = button.getAttribute('data-service-name') || '';
+        const description = button.getAttribute('data-service-description') || '';
+        const price = button.getAttribute('data-service-price') || '';
+        const isActive = button.getAttribute('data-service-active') === 'true';
+        openServiceModal(id, name, description, price, isActive);
+    }
+
+    function openUserModal(id, login, fullName, phone, roleId, isActive) {
+        document.getElementById('userId').value = id || '';
+        document.getElementById('userLogin').value = login || '';
+        document.getElementById('userPassword').value = '';
+        document.getElementById('userFullName').value = fullName || '';
+        document.getElementById('userPhone').value = phone || '';
+        document.getElementById('userRoleId').value = roleId || '';
+        
+        const checkbox = document.getElementById('userIsActive');
+        const hiddenField = document.getElementById('userIsActiveHidden');
+        checkbox.checked = isActive !== false && isActive !== 'false';
+        hiddenField.value = checkbox.checked ? 'true' : 'false';
+        
+        const passwordField = document.getElementById('userPassword');
+        const passwordRequired = document.getElementById('passwordRequired');
+        const passwordHint = document.getElementById('passwordHint');
+        
+        if (id) {
+            passwordField.required = false;
+            passwordRequired.style.display = 'none';
+            passwordHint.style.display = 'block';
+            document.getElementById('userModalLabel').textContent = 'Редактировать пользователя';
+        } else {
+            passwordField.required = true;
+            passwordRequired.style.display = 'inline';
+            passwordHint.style.display = 'none';
+            document.getElementById('userModalLabel').textContent = 'Добавить пользователя';
+        }
+    }
+
+    function openUserModalFromButton(button) {
+        const id = button.getAttribute('data-user-id');
+        const login = button.getAttribute('data-user-login') || '';
+        const fullName = button.getAttribute('data-user-fullname') || '';
+        const phone = button.getAttribute('data-user-phone') || '';
+        const roleId = button.getAttribute('data-user-roleid') || '';
+        const isActive = button.getAttribute('data-user-active') === 'true';
+        openUserModal(id, login, fullName, phone, roleId, isActive);
+    }
+
+    function openRoleModal(id, roleName) {
+        document.getElementById('roleId').value = id || '';
+        document.getElementById('roleName').value = roleName || '';
+        document.getElementById('roleModalLabel').textContent = id ? 'Редактировать роль' : 'Добавить роль';
+    }
+
+    // функции для работы с продажами
+    let saleItemIndex = 0;
+    const products = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.Products.Where(p => p.IsActive).Select(p => new { p.ProductId, p.Name, p.Price, p.StockQuantity })));
+    const services = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.Services.Where(s => s.IsActive).Select(s => new { s.ServiceId, s.Name, s.Price })));
+    let serviceOrderItemIndex = 0;
+
+    function openSaleModal() {
+        saleItemIndex = 0;
+        document.getElementById('saleItemsContainer').innerHTML = '';
+        document.getElementById('saleTotal').textContent = '0.00';
+        addSaleItem();
+    }
+
+
+    function addSaleItem() {
+        const container = document.getElementById('saleItemsContainer');
+        const itemDiv = document.createElement('div');
+        itemDiv.className = 'sale-item mb-3 p-3 border rounded';
+        itemDiv.id = `saleItem_${saleItemIndex}`;
+        itemDiv.innerHTML = `
+            <div class="row">
+                <div class="col-md-5">
+                    <label class="form-label">Товар *</label>
+                    <select class="form-select product-select" name="SaleItems[${saleItemIndex}].ProductId" required onchange="updateSaleItemPrice(${saleItemIndex})">
+                        <option value="">Выберите товар</option>
+                        ${products.map(p => {
+                            const price = typeof p.Price === 'number' ? p.Price : parseFloat(p.Price);
+                            const stock = typeof p.StockQuantity === 'number' ? p.StockQuantity : parseInt(p.StockQuantity);
+                            return `<option value="${p.ProductId}" data-price="${price}" data-stock="${stock}">${p.Name} - ${price.toFixed(2)} ₽ (остаток: ${stock} шт.)</option>`;
+                        }).join('')}
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Количество *</label>
+                    <input type="number" class="form-control quantity-input" name="SaleItems[${saleItemIndex}].Quantity" min="1" value="1" required onchange="updateSaleTotal()" oninput="updateSaleTotal()">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Цена за шт. *</label>
+                    <input type="number" step="0.01" class="form-control price-input" name="SaleItems[${saleItemIndex}].PriceAtSale" min="0" required onchange="updateSaleTotal()" oninput="updateSaleTotal()" placeholder="Выберите товар">
+                </div>
+                <div class="col-md-1">
+                    <label class="form-label">&nbsp;</label>
+                    <button type="button" class="btn btn-sm btn-danger w-100" onclick="removeSaleItem(${saleItemIndex})">✕</button>
+                </div>
+            </div>
+        `;
+        container.appendChild(itemDiv);
+        saleItemIndex++;
+    }
+
+    function removeSaleItem(index) {
+        const item = document.getElementById(`saleItem_${index}`);
+        if (item) {
+            item.remove();
+            updateSaleTotal();
+            // пересчитка индексов для правильной отправки формы
+            reindexSaleItems();
+        }
+    }
+
+    function reindexSaleItems() {
+        const items = document.querySelectorAll('.sale-item');
+        // НЕ удаляем пустые элементы перед отправкой - они могут быть валидными
+        // просто пересчитываем индексы для всех элементов
+        items.forEach((item, newIndex) => {
+            // обновление ID элемента
+            item.id = `saleItem_${newIndex}`;
+            
+            // обновление имен полей
+            const productSelect = item.querySelector('.product-select');
+            const quantityInput = item.querySelector('.quantity-input');
+            const priceInput = item.querySelector('.price-input');
+            
+            if (productSelect) {
+                productSelect.name = `SaleItems[${newIndex}].ProductId`;
+                productSelect.setAttribute('onchange', `updateSaleItemPrice(${newIndex})`);
+            }
+            if (quantityInput) {
+                quantityInput.name = `SaleItems[${newIndex}].Quantity`;
+            }
+            if (priceInput) {
+                priceInput.name = `SaleItems[${newIndex}].PriceAtSale`;
+            }
+            
+            // обновление кнопки удаления
+            const removeBtn = item.querySelector('button[onclick*="removeSaleItem"]');
+            if (removeBtn) {
+                removeBtn.setAttribute('onclick', `removeSaleItem(${newIndex})`);
+            }
+        });
+    }
+
+    function updateSaleItemPrice(index) {
+        const select = document.querySelector(`#saleItem_${index} .product-select`);
+        const priceInput = document.querySelector(`#saleItem_${index} .price-input`);
+        const quantityInput = document.querySelector(`#saleItem_${index} .quantity-input`);
+        
+        if (select && select.value) {
+            const option = select.options[select.selectedIndex];
+            const price = parseFloat(option.getAttribute('data-price'));
+            const stock = parseInt(option.getAttribute('data-stock'));
+            
+            if (priceInput && !isNaN(price) && price > 0) {
+                priceInput.value = price.toFixed(2);
+                priceInput.readOnly = false; // разрешение редактирования, но устанавка значения по умолчанию
+            }
+            if (quantityInput) {
+                quantityInput.max = stock;
+                quantityInput.setAttribute('data-max-stock', stock);
+                if (parseInt(quantityInput.value) > stock || parseInt(quantityInput.value) < 1) {
+                    quantityInput.value = Math.min(Math.max(1, stock), parseInt(quantityInput.value) || 1);
+                }
+                // показ предупреждения, если остаток мал
+                if (stock <= 0) {
+                    quantityInput.style.borderColor = '#dc3545';
+                    quantityInput.title = 'Товар отсутствует на складе';
+                } else if (stock < 5) {
+                    quantityInput.style.borderColor = '#ffc107';
+                    quantityInput.title = 'Мало товара на складе';
+                } else {
+                    quantityInput.style.borderColor = '';
+                    quantityInput.title = '';
+                }
+            }
+            updateSaleTotal();
+        } else {
+            // если товар не выбран, очищаем поля
+            if (priceInput) {
+                priceInput.value = '';
+                priceInput.readOnly = false;
+            }
+            if (quantityInput) {
+                quantityInput.max = '';
+                quantityInput.style.borderColor = '';
+                quantityInput.title = '';
+            }
+        }
+    }
+
+    function updateSaleTotal() {
+        let total = 0;
+        document.querySelectorAll('.sale-item').forEach(item => {
+            const quantity = parseFloat(item.querySelector('.quantity-input')?.value || 0);
+            const price = parseFloat(item.querySelector('.price-input')?.value || 0);
+            total += quantity * price;
+        });
+        document.getElementById('saleTotal').textContent = total.toFixed(2);
+    }
+
+    async function openSaleDetailsModal(saleId) {
+        try {
+            const response = await fetch(`/Main?handler=SaleDetails&id=${saleId}`);
+            const html = await response.text();
+            document.getElementById('saleDetailsContent').innerHTML = html;
+        } catch (error) {
+            document.getElementById('saleDetailsContent').innerHTML = '<p>Ошибка загрузки деталей продажи</p>';
+        }
+    }
+
+    // обработка отправки формы продажи
+    // использование делегирования событий, так как форма может быть в модальном окне
+    document.addEventListener('submit', function(e) {
+        const saleForm = e.target;
+        if (saleForm && saleForm.id === 'saleForm') {
+            console.log('Форма отправляется через submit event...');
+            
+            // пересчитка индексов перед отправкой
+            reindexSaleItems();
+            
+            // проверка, что есть хотя бы один товар
+            const items = document.querySelectorAll('.sale-item');
+            console.log('Найдено товаров:', items.length);
+            
+            // проверка, что все товары выбраны и заполнены
+            const validItems = [];
+            let hasErrors = false;
+            let errorMessage = 'Заполните все поля для всех товаров:\n';
+            
+            items.forEach((item, index) => {
+                const productSelect = item.querySelector('.product-select');
+                const quantityInput = item.querySelector('.quantity-input');
+                const priceInput = item.querySelector('.price-input');
+                
+                const productId = productSelect?.value;
+                const quantity = quantityInput?.value;
+                const price = priceInput?.value;
+                
+                console.log(`Товар ${index + 1}:`, {
+                    product: productId,
+                    quantity: quantity,
+                    price: price
+                });
+                
+                if (!productId || productId === '0' || productId === '') {
+                    hasErrors = true;
+                    errorMessage += `- Товар ${index + 1}: выберите товар\n`;
+                } else if (!quantity || parseInt(quantity) <= 0) {
+                    hasErrors = true;
+                    errorMessage += `- Товар ${index + 1}: укажите количество\n`;
+                } else if (!price || parseFloat(price) <= 0) {
+                    hasErrors = true;
+                    errorMessage += `- Товар ${index + 1}: укажите цену\n`;
+                } else {
+                    validItems.push(item);
+                }
+            });
+            
+            if (validItems.length === 0) {
+                e.preventDefault();
+                alert('Добавьте хотя бы один товар в продажу');
+                return false;
+            }
+            
+            if (hasErrors) {
+                e.preventDefault();
+                alert(errorMessage);
+                return false;
+            }
+            
+            // показ индикатора загрузки
+            const submitBtn = saleForm.querySelector('button[type="submit"], button[onclick="submitSaleForm()"]');
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Оформление...';
+            }
+            
+            console.log('Форма валидна, отправка...');
+            // форма будет отправлена автоматически
+            return true;
+        }
+    });
+
+    // функции для заказов услуг
+    function openServiceOrderModal() {
+        serviceOrderItemIndex = 0;
+        document.getElementById('serviceOrderItemsContainer').innerHTML = '';
+        document.getElementById('serviceOrderTotal').textContent = '0.00';
+        document.getElementById('serviceOrderNotes').value = '';
+        addServiceOrderItem();
+    }
+
+    function addServiceOrderItem() {
+        const container = document.getElementById('serviceOrderItemsContainer');
+        const itemDiv = document.createElement('div');
+        itemDiv.className = 'service-order-item mb-3 p-3 border rounded';
+        itemDiv.id = `serviceOrderItem_${serviceOrderItemIndex}`;
+        itemDiv.innerHTML = `
+            <div class="row">
+                <div class="col-md-10">
+                    <label class="form-label">Услуга *</label>
+                    <select class="form-select service-select" name="ServiceOrderItems[${serviceOrderItemIndex}].ServiceId" required onchange="updateServiceOrderTotal()">
+                        <option value="">Выберите услугу</option>
+                        ${services.map(s => {
+                            const price = typeof s.Price === 'number' ? s.Price : parseFloat(s.Price);
+                            return `<option value="${s.ServiceId}" data-price="${price}">${s.Name} - ${price.toFixed(2)} ₽</option>`;
+                        }).join('')}
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">&nbsp;</label>
+                    <button type="button" class="btn btn-sm btn-danger w-100" onclick="removeServiceOrderItem(${serviceOrderItemIndex})">✕</button>
+                </div>
+            </div>
+        `;
+        container.appendChild(itemDiv);
+        serviceOrderItemIndex++;
+    }
+
+    function removeServiceOrderItem(index) {
+        const item = document.getElementById(`serviceOrderItem_${index}`);
+        if (item) {
+            item.remove();
+            updateServiceOrderTotal();
+            reindexServiceOrderItems();
+        }
+    }
+
+    function reindexServiceOrderItems() {
+        const items = document.querySelectorAll('.service-order-item');
+        // удаление пустых элементов (без выбранной услуги)
+        items.forEach(item => {
+            const serviceSelect = item.querySelector('.service-select');
+            if (!serviceSelect || !serviceSelect.value) {
+                item.remove();
+            }
+        });
+        
+        // Пересчёт индексов для оставшихся элементов
+        const remainingItems = document.querySelectorAll('.service-order-item');
+        remainingItems.forEach((item, newIndex) => {
+            // обновление ID элемента
+            item.id = `serviceOrderItem_${newIndex}`;
+            
+            // обновление имен полей
+            const serviceSelect = item.querySelector('.service-select');
+            if (serviceSelect) {
+                serviceSelect.name = `ServiceOrderItems[${newIndex}].ServiceId`;
+                serviceSelect.setAttribute('onchange', 'updateServiceOrderTotal()');
+            }
+            
+            // обновление кнопки удаления
+            const removeBtn = item.querySelector('button[onclick*="removeServiceOrderItem"]');
+            if (removeBtn) {
+                removeBtn.setAttribute('onclick', `removeServiceOrderItem(${newIndex})`);
+            }
+        });
+    }
+
+    function updateServiceOrderTotal() {
+        let total = 0;
+        document.querySelectorAll('.service-order-item').forEach(item => {
+            const serviceSelect = item.querySelector('.service-select');
+            if (serviceSelect && serviceSelect.value) {
+                const option = serviceSelect.options[serviceSelect.selectedIndex];
+                const price = parseFloat(option.getAttribute('data-price') || 0);
+                total += price;
+            }
+        });
+        document.getElementById('serviceOrderTotal').textContent = total.toFixed(2);
+    }
+
+    function submitServiceOrderForm() {
+        const serviceOrderForm = document.getElementById('serviceOrderForm');
+        if (!serviceOrderForm) {
+            console.error('Форма не найдена');
+            return;
+        }
+        
+        // пересчёт индексов перед отправкой
+        reindexServiceOrderItems();
+        
+        // проверка, что есть хотя бы одна услуга
+        const items = document.querySelectorAll('.service-order-item');
+        
+        if (items.length === 0) {
+            alert('Добавьте хотя бы одну услугу в заказ');
+            return;
+        }
+        
+        // проверка, что все услуги выбраны
+        let hasErrors = false;
+        let errorMessage = 'Заполните все поля:\n';
+        
+        items.forEach((item, index) => {
+            const serviceSelect = item.querySelector('.service-select');
+            
+            if (!serviceSelect || !serviceSelect.value) {
+                hasErrors = true;
+                errorMessage += `- Услуга ${index + 1}: выберите услугу\n`;
+            }
+        });
+        
+        if (hasErrors) {
+            alert(errorMessage);
+            return;
+        }
+        
+        // показ индикатора загрузки
+        const submitBtn = serviceOrderForm.querySelector('button[onclick="submitServiceOrderForm()"]');
+        if (submitBtn) {
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Создание...';
+        }
+        
+        // отправка формы
+        serviceOrderForm.submit();
+    }
+
+    async function openServiceOrderDetailsModal(orderId) {
+        try {
+            const response = await fetch(`/Main?handler=ServiceOrderDetails&id=${orderId}`);
+            const html = await response.text();
+            document.getElementById('serviceOrderDetailsContent').innerHTML = html;
+        } catch (error) {
+            document.getElementById('serviceOrderDetailsContent').innerHTML = '<p>Ошибка загрузки деталей заказа</p>';
+        }
+    }
+
+    // обработка отправки формы заказа услуг
+    document.addEventListener('submit', function(e) {
+        const serviceOrderForm = e.target;
+        if (serviceOrderForm && serviceOrderForm.id === 'serviceOrderForm') {
+            // пересчёт индексов перед отправкой
+            reindexServiceOrderItems();
+            
+            // проверка, что есть хотя бы одна услуга
+            const items = document.querySelectorAll('.service-order-item');
+            
+            if (items.length === 0) {
+                e.preventDefault();
+                alert('Добавьте хотя бы одну услугу в заказ');
+                return false;
+            }
+            
+            // проверка, что все услуги выбраны
+            let hasErrors = false;
+            let errorMessage = 'Заполните все поля:\n';
+            
+            items.forEach((item, index) => {
+                const serviceSelect = item.querySelector('.service-select');
+                
+                if (!serviceSelect || !serviceSelect.value) {
+                    hasErrors = true;
+                    errorMessage += `- Услуга ${index + 1}: выберите услугу\n`;
+                }
+            });
+            
+            if (hasErrors) {
+                e.preventDefault();
+                alert(errorMessage);
+                return false;
+            }
+            
+            // показ индикатора загрузки
+            const submitBtn = serviceOrderForm.querySelector('button[type="submit"]');
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Создание...';
+            }
+            
+            return true;
+        }
+    });
+    
+    // функция для очистки фильтров
+    function clearFilters() {
+        const form = document.getElementById('searchForm');
+        if (form) {
+            // очистка всех полей фильтров
+            const filterInputs = form.querySelectorAll('select[name^="filter"], input[name^="filter"]');
+            filterInputs.forEach(input => {
+                if (input.type === 'date') {
+                    input.value = '';
+                } else if (input.tagName === 'SELECT') {
+                    input.selectedIndex = 0;
+                }
+            });
+            // очистка поиска
+            const searchInput = form.querySelector('input[name="search"]');
+            if (searchInput) {
+                searchInput.value = '';
+            }
+            form.submit();
+        }
+    }
+
+    // функции для работы с поставками
+    let supplyItemIndex = 0;
+    const isDirectorUser = @Html.Raw((Model.UserRole == "Директор" || Model.UserRole == "Заместитель директора").ToString().ToLower());
+
+    function openSupplyModal() {
+        supplyItemIndex = 0;
+        document.getElementById('supplyItemsContainer').innerHTML = '';
+        document.getElementById('supplierName').value = '';
+        document.getElementById('supplyNotes').value = '';
+        const totalEl = document.getElementById('supplyTotal');
+        if (totalEl) totalEl.textContent = '0.00';
+        addSupplyItem();
+    }
+
+    function addSupplyItem() {
+        const container = document.getElementById('supplyItemsContainer');
+        const itemDiv = document.createElement('div');
+        itemDiv.className = 'supply-item mb-3 p-3 border rounded';
+        itemDiv.id = `supplyItem_${supplyItemIndex}`;
+        
+        let costPriceField = '';
+        if (isDirectorUser) {
+            costPriceField = `
+                <div class="col-md-3">
+                    <label class="form-label">Закуп. цена</label>
+                    <input type="number" step="0.01" class="form-control cost-price-input" name="SupplyItems[${supplyItemIndex}].CostPrice" min="0" onchange="updateSupplyTotal()" oninput="updateSupplyTotal()" placeholder="0.00">
+                </div>
+            `;
+        }
+        
+        itemDiv.innerHTML = `
+            <div class="row">
+                <div class="col-md-${isDirectorUser ? '5' : '8'}">
+                    <label class="form-label">Товар *</label>
+                    <select class="form-select supply-product-select" name="SupplyItems[${supplyItemIndex}].ProductId" required onchange="updateSupplyItemCostPrice(${supplyItemIndex})">
+                        <option value="">Выберите товар</option>
+                        ${products.map(p => {
+                            return `<option value="${p.ProductId}">${p.Name}</option>`;
+                        }).join('')}
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Количество *</label>
+                    <input type="number" class="form-control supply-quantity-input" name="SupplyItems[${supplyItemIndex}].Quantity" min="1" value="1" required onchange="updateSupplyTotal()" oninput="updateSupplyTotal()">
+                </div>
+                ${costPriceField}
+                <div class="col-md-1">
+                    <label class="form-label">&nbsp;</label>
+                    <button type="button" class="btn btn-sm btn-danger w-100" onclick="removeSupplyItem(${supplyItemIndex})">✕</button>
+                </div>
+            </div>
+        `;
+        container.appendChild(itemDiv);
+        supplyItemIndex++;
+    }
+
+    function removeSupplyItem(index) {
+        const item = document.getElementById(`supplyItem_${index}`);
+        if (item) {
+            item.remove();
+            updateSupplyTotal();
+            reindexSupplyItems();
+        }
+    }
+
+    function reindexSupplyItems() {
+        const items = document.querySelectorAll('.supply-item');
+        items.forEach((item, newIndex) => {
+            item.id = `supplyItem_${newIndex}`;
+            
+            const productSelect = item.querySelector('.supply-product-select');
+            const quantityInput = item.querySelector('.supply-quantity-input');
+            const costPriceInput = item.querySelector('.cost-price-input');
+            
+            if (productSelect) {
+                productSelect.name = `SupplyItems[${newIndex}].ProductId`;
+                productSelect.setAttribute('onchange', `updateSupplyItemCostPrice(${newIndex})`);
+            }
+            if (quantityInput) {
+                quantityInput.name = `SupplyItems[${newIndex}].Quantity`;
+            }
+            if (costPriceInput) {
+                costPriceInput.name = `SupplyItems[${newIndex}].CostPrice`;
+            }
+            
+            const removeBtn = item.querySelector('button[onclick*="removeSupplyItem"]');
+            if (removeBtn) {
+                removeBtn.setAttribute('onclick', `removeSupplyItem(${newIndex})`);
+            }
+        });
+    }
+
+    function updateSupplyItemCostPrice(index) {
+        // ????если директор, можно оставить поле пустым или заполнить
+        // закупочная цена берётся из карточки товара на сервере, если не указана
+        updateSupplyTotal();
+    }
+
+    function updateSupplyTotal() {
+        if (!isDirectorUser) return;
+        
+        let total = 0;
+        document.querySelectorAll('.supply-item').forEach(item => {
+            const quantity = parseFloat(item.querySelector('.supply-quantity-input')?.value || 0);
+            const costPrice = parseFloat(item.querySelector('.cost-price-input')?.value || 0);
+            total += quantity * costPrice;
+        });
+        const totalEl = document.getElementById('supplyTotal');
+        if (totalEl) totalEl.textContent = total.toFixed(2);
+    }
+
+    async function openSupplyDetailsModal(supplyId) {
+        try {
+            const response = await fetch(`/Main?handler=SupplyDetails&id=${supplyId}`);
+            const html = await response.text();
+            document.getElementById('supplyDetailsContent').innerHTML = html;
+        } catch (error) {
+            document.getElementById('supplyDetailsContent').innerHTML = '<p>Ошибка загрузки деталей поставки</p>';
+        }
+    }
+
+    // валидация формы поставки
+    document.addEventListener('submit', function(e) {
+        const supplyForm = e.target;
+        if (supplyForm && supplyForm.id === 'supplyForm') {
+            // переиндексирование и отправка
+            reindexSupplyItems();
+            
+            const submitBtn = supplyForm.querySelector('button[type="submit"]');
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Оформление...';
+            }
+            
+            // разрешение отправки
+            return true;
+        }
+    });
+</script>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

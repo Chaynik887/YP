@@ -1,0 +1,35 @@
+﻿@page
+@model ErrorModel
+@{
+    ViewData["Title"] = "Ошибка";
+}
+
+<h1 class="text-danger">Ошибка</h1>
+<h2 class="text-danger">Произошла ошибка при обработке вашего запроса.</h2>
+
+@if (Model.ShowRequestId)
+{
+    <p>
+        <strong>ID запроса:</strong> <code>@Model.RequestId</code>
+    </p>
+}
+
+@if (!string.IsNullOrEmpty(Model.ErrorMessage))
+{
+    <div style="margin-top: 20px; padding: 15px; background-color: #f8d7da; border: 1px solid #f5c6cb; border-radius: 5px;">
+        <h3 style="color: #721c24; margin-top: 0;">Сообщение об ошибке:</h3>
+        <p style="color: #721c24; font-weight: bold;">@Model.ErrorMessage</p>
+    </div>
+}
+
+@if (!string.IsNullOrEmpty(Model.StackTrace))
+{
+    <details style="margin-top: 20px;">
+        <summary style="cursor: pointer; font-weight: bold; color: #856404;">Показать детали ошибки (Stack Trace)</summary>
+        <pre style="background-color: #f8f9fa; padding: 15px; border: 1px solid #dee2e6; border-radius: 5px; overflow-x: auto; font-size: 12px;">@Model.StackTrace</pre>
+    </details>
+}
+
+<div style="margin-top: 30px;">
+    <a href="/Main" class="btn btn-primary">Вернуться на главную</a>
+</div>
